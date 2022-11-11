@@ -7,7 +7,7 @@ import numpy as np
 #А - отвечает за глубину погружения
 #B - за амплитуду колебаний
 #Количество параметров А и В
-n = 10000
+n = 1000
 A_jun = []
 B_jun = []
 A_adult = []
@@ -59,3 +59,16 @@ for i in range(8):
     max_param = max([abs(mp) for mp in Macroparameters[i]])
     for j in range(len(Macroparameters[i])):
         norm_Macroparameters[i].append(Macroparameters[i][j]/max_param)
+
+
+classification_Table = np.zeros((len(Fitness),len(Fitness)))
+for i in range(len(Fitness)):
+    for j in range(i,len(Fitness)):
+        if i == j:
+            classification_Table[i][j] = -10
+        if Fitness[i]>Fitness[j]:
+            classification_Table[i][j] = 1
+        else:
+            classification_Table[j][i] = 1
+
+print(classification_Table)
