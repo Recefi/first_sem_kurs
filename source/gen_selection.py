@@ -65,10 +65,13 @@ classification_Table = np.zeros((len(Fitness),len(Fitness)))
 for i in range(len(Fitness)):
     for j in range(i,len(Fitness)):
         if i == j:
-            classification_Table[i][j] = -10
+            classification_Table[i,j] = 0
+            continue  
         if Fitness[i]>Fitness[j]:
-            classification_Table[i][j] = 1
+            classification_Table[i,j] = 1
+            classification_Table[j,i] = -1
         else:
-            classification_Table[j][i] = 1
+            classification_Table[i,j] = -1
+            classification_Table[j,i] = 1
 
 print(classification_Table)
