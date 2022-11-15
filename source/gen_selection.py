@@ -1,5 +1,5 @@
 import random
-import source.param as param
+import param as param
 import math
 import numpy as np
 
@@ -7,18 +7,19 @@ import numpy as np
 #А - отвечает за глубину погружения
 #B - за амплитуду колебаний
 #Количество параметров А и В
-n = 1000
+n = 1000 #//4
 A_jun = []
 B_jun = []
 A_adult = []
 B_adult = []
-for i in range(n//2):
+for i in range(n//4):
     for sign in [-1,1]:
-        A_jun.append(random.random()*(-param.depth))
-        B_jun.append(random.random()* min(-A_jun[i], A_jun[i]+param.depth)*sign)
+        for sign_2 in [-1,1]:
+            A_jun.append(random.random()*(-param.depth))
+            B_jun.append(random.random()* min(-A_jun[i], A_jun[i]+param.depth)*sign)
 
-        A_adult.append(random.random()*(-param.depth))
-        B_adult.append(random.random()* min(-A_adult[i], A_adult[i]+param.depth)*sign)
+            A_adult.append(random.random()*(-param.depth))
+            B_adult.append(random.random()* min(-A_adult[i], A_adult[i]+param.depth)*sign_2)
 
 
 
@@ -53,12 +54,20 @@ for i in range(len(index_of_bad_Mps)):
     for j in range(8):
         Macroparameters[j].pop(i)
 
+        
+
 
 norm_Macroparameters = [[] for i in range(8)]
 for i in range(8):
     max_param = max([abs(mp) for mp in Macroparameters[i]])
     for j in range(len(Macroparameters[i])):
         norm_Macroparameters[i].append(Macroparameters[i][j]/max_param)
+
+M_sqr = [[for i in range(8)] for j in range(8)]
+for i in range(8):
+    for j in range(8):
+        for k in range(len(norm_Macroparameters[1])):
+            M_sqr[k][i][j].append(norm_Macroparameters[i][k]*norm_Macroparameters[j][k])
 
 
 classification_Table = np.zeros((len(Fitness),len(Fitness)))
@@ -74,4 +83,3 @@ for i in range(len(Fitness)):
             classification_Table[i,j] = -1
             classification_Table[j,i] = 1
 
-print(classification_Table)
