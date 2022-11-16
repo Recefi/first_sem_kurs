@@ -7,7 +7,7 @@ import numpy as np
 #А - отвечает за глубину погружения
 #B - за амплитуду колебаний
 #Количество параметров А и В
-n = 1000 #//4
+n = 100 #//4
 A_jun = []
 B_jun = []
 A_adult = []
@@ -50,9 +50,11 @@ for i in range(n):
         Fitness.append(-s-p-q+(np.sqrt((4*r*p+np.square(p+q+s)))))
 
 #Очистка
+k=0
 for i in range(len(index_of_bad_Mps)):
     for j in range(8):
         Macroparameters[j].pop(i)
+    k-=1
 
         
 
@@ -63,11 +65,11 @@ for i in range(8):
     for j in range(len(Macroparameters[i])):
         norm_Macroparameters[i].append(Macroparameters[i][j]/max_param)
 
-M_sqr = [[for i in range(8)] for j in range(8)]
+M_sqr = [[[]for i in range(8)] for j in range(8)]
 for i in range(8):
     for j in range(8):
         for k in range(len(norm_Macroparameters[1])):
-            M_sqr[k][i][j].append(norm_Macroparameters[i][k]*norm_Macroparameters[j][k])
+            M_sqr[j][i].append(norm_Macroparameters[i][k]*norm_Macroparameters[j][k])
 
 
 classification_Table = np.zeros((len(Fitness),len(Fitness)))
