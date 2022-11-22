@@ -1,5 +1,5 @@
 import random
-import param as param
+import source.param as param
 import math
 import numpy as np
 
@@ -59,17 +59,59 @@ for i in range(len(index_of_bad_Mps)):
         
 
 
-norm_Macroparameters = [[] for i in range(8)]
-for i in range(8):
-    max_param = max([abs(mp) for mp in Macroparameters[i]])
-    for j in range(len(Macroparameters[i])):
-        norm_Macroparameters[i].append(Macroparameters[i][j]/max_param)
+# M_diff = [[[]for i in range(len(Macroparameters[1]))] for j in range(len(Macroparameters[1]))]
+
+# for v in range(len(Macroparameters[1])):
+#     for w in range(len(Macroparameters[1])):
+#         for i in range(8):
+#             M_diff[v][w].append(Macroparameters[i][v]-Macroparameters[i][w])
+
 
 M_sqr = [[[]for i in range(8)] for j in range(8)]
 for i in range(8):
     for j in range(8):
-        for k in range(len(norm_Macroparameters[1])):
-            M_sqr[j][i].append(norm_Macroparameters[i][k]*norm_Macroparameters[j][k])
+        for k in range(len(Macroparameters[1])):
+            M_sqr[j][i].append(Macroparameters[i][k]*Macroparameters[j][k])
+
+
+# M_sqr_diff = [[[[]for i in range(len(Macroparameters[1]))]for j in range(8)]for k in range(8)]
+
+
+# for v in range(len(Macroparameters[1])):
+#     for w in range(len(Macroparameters[1])):
+#         for i in range(8):
+#             for j in range(8):
+#               M_sqr_diff[i][j][v].append(M_sqr[i][j][v]-M_sqr[i][j][w])
+
+# M_diff_norm=[[[]for i in range(len(Macroparameters[1]))] for j in range(len(Macroparameters[1]))]
+# for i in range(8):
+#     M_max=max([(abs(m[i])for m in mp) for mp in M_diff])
+#     for v in range(len(Macroparameters[1])):
+#         for w in range(len(Macroparameters[1])):
+#             M_diff[v][w].append(M_diff[v][w][i]/M_max)
+
+# M_sqr_diff_norm=[[[[]for i in range(len(Macroparameters[1]))]for j in range(len(Macroparameters[1]))]for k in range(8)]
+
+# for i in range(8):
+#     for j in range(8):
+#         M_max=max([(abs(m[i][j])for m in mp) for mp in M_diff])
+#         for v in range(len(Macroparameters[1])):
+#             for w in range(len(Macroparameters[1])):
+#                 M_sqr_diff_norm[v][w][i].append(M_sqr_diff[v][w][i][j]/M_max)
+
+
+# norm_Macroparameters = [[] for i in range(8)]
+# for i in range(8):
+#     max_param = max([abs(mp) for mp in Macroparameters[i]])
+#     for j in range(len(Macroparameters[i])):
+#         norm_Macroparameters[i].append(Macroparameters[i][j]/max_param)
+
+
+
+
+
+
+
 
 
 classification_Table = np.zeros((len(Fitness),len(Fitness)))

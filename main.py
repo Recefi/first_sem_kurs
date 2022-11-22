@@ -1,7 +1,7 @@
 import source.gen_selection as gs
 import source.graphical_interface as gui
 import numpy as np
-
+import source.machine_learning as ml
 
 # row_table = 20 #Количество строк в таблицах
 # gui.get_table('Macroparams',['M1','M2','M3','M4','M5','M6','M7','M8'],[[i] for i in range(row_table)],np.transpose(gs.Macroparameters)[:row_table])
