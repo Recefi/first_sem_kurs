@@ -53,7 +53,7 @@ for i in range(n):
 k=0
 for i in range(len(index_of_bad_Mps)):
     for j in range(8):
-        Macroparameters[j].pop(i)
+        Macroparameters[j].pop(i+k)
     k-=1
 
         

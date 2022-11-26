@@ -10,4 +10,4 @@ import source.machine_learning as ml
 # for i in range(len(gs.norm_Macroparameters)):
 #     gui.get_gistogram(gs.norm_Macroparameters[i],"M"+str(i+1))
 
-gui.get_correllation(gs.norm_Macroparameters,["M1","M2","M3","M4","M5","M6","M7","M8"])
+#gui.get_correllation(gs.norm_Macroparameters,["M1","M2","M3","M4","M5","M6","M7","M8"])
