@@ -7,7 +7,7 @@ import numpy as np
 #А - отвечает за глубину погружения
 #B - за амплитуду колебаний
 #Количество параметров А и В
-n = 100 #//4
+n = 16 #//4
 A_jun = []
 B_jun = []
 A_adult = []
@@ -82,3 +82,8 @@ for i in range(len(Fitness)):
         selection.append(res)
 
 selection = np.array(selection)
+
+# Нормирование
+for i in range(len(selection[0])):
+    max = np.max(np.abs(selection[:,i]))
+    selection[:,i]/=max

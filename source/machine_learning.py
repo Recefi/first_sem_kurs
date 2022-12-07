@@ -12,7 +12,10 @@ from sklearn.inspection import DecisionBoundaryDisplay
 
 
 X=gs.selection[:,1:]
-Y = np.transpose(gs.selection[:,:1])
+print(X)
+Y = np.transpose(gs.selection[:,0])
+print(Y)
+
 # we create 40 separable points
 # X = []
 # y = []
@@ -54,10 +57,10 @@ Y = np.transpose(gs.selection[:,:1])
 
 
 # fit the model, don't regularize for illustration purposes
-# clf = svm.SVC(kernel="linear", C=1000)
-# clf.fit(X, y)
+clf = svm.SVC(kernel="linear", C=1000)
+clf.fit(X, Y)
 
-# plt.scatter(X[:, 0], X[:, 5], c=y, s=3, cmap=plt.cm.Paired)
+#plt.scatter(X[:, 0], X[:, 5], c=Y, s=3, cmap=plt.cm.Paired)
 
 # plot the decision function
 ax = plt.gca()
@@ -73,11 +76,11 @@ ax = plt.gca()
 # )
 # plot support vectors
 
-# lambdas = clf.coef_[0]
-# b = clf.intercept_[0]
-# x_visual = np.linspace(-1,1)
-# y_visual = -(lambdas[0] / lambdas[5]) * x_visual - b / lambdas[5]
-# ax.plot(x_visual, y_visual)
+lambdas = clf.coef_[0]
+b = clf.intercept_[0]
+x_visual = np.linspace(-1,1)
+y_visual = -(lambdas[0] / lambdas[1]) * x_visual - b / lambdas[5]
+ax.plot(x_visual, y_visual)
 # ax.scatter(
 #     clf.support_vectors_[:, 0],
 #     clf.support_vectors_[:, 5],
@@ -87,5 +90,8 @@ ax = plt.gca()
 #     facecolors="none",
 #     edgecolors="k",
 # )
-ax.scatter(X[:, 0], X[:, 5], c=Y, s=3, cmap=plt.cm.Paired)
+
+print(lambdas)
+
+ax.scatter(X[:, 0], X[:, 1], c=Y, s=1, cmap=plt.cm.Paired)
 plt.show()
