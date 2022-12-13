@@ -11,6 +11,10 @@ import source.machine_learning as ml
 # gui.get_table('Norm macroparams',['M1','M2','M3','M4','M5','M6','M7','M8'],[[i] for i in range(row_table)],np.transpose(gs.norm_Macroparameters)[:row_table])
 
 #for i in range(8):
-#    gui.get_gistogram(gs.Fitness[i],"M"+str(i))
+#    gui.get_gistogram(gs.selection[i],"M"+str(i+1))
+print(gs.A_jun[gs.maxf_ind])
+print(gs.B_jun[gs.maxf_ind])
+gui.get_sinss()
 
-gui.get_correllation(np.transpose(gs.Fitness[1:]),["M1","M2","M3","M4","M5","M6","M7","M8"])
+gui.get_correllation(np.transpose(gs.Fitness)[1:9:1],["M1","M2","M3","M4","M5","M6","M7","M8"])
+

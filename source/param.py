@@ -1,5 +1,5 @@
-depth = 100
-optimal_depth = 60
+depth = 140
+optimal_depth = 80
 
 sigma1 = 0.25
 sigma2 = 0.003

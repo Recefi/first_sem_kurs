@@ -59,11 +59,11 @@ print(Y)
 # fit the model, don't regularize for illustration purposes
 clf = svm.SVC(kernel="linear", C=1000)
 clf.fit(X, Y)
-
+print(len(X))
 #plt.scatter(X[:, 0], X[:, 5], c=Y, s=3, cmap=plt.cm.Paired)
 
 # plot the decision function
-ax = plt.gca()
+ax1 = plt.gca()
 # DecisionBoundaryDisplay.from_estimator(
 #     clf,
 #     X,
@@ -75,12 +75,20 @@ ax = plt.gca()
 #     ax=ax,
 # )
 # plot support vectors
-
 lambdas = clf.coef_[0]
 b = clf.intercept_[0]
+fig, ax = plt.subplots(8,8)
+for i in range(8):
+    for j in range(8):
+        if i!=j :
+            ax[i][j].set(ylim=(-1, 1))
+            ax[i][j].scatter(X[:, i], X[:, j], c=Y, s=1, cmap=plt.cm.Paired)
+            x_visual = np.linspace(-1, 1)
+            y_visual = -(lambdas[i] / lambdas[j]) * x_visual - b / lambdas[j]
+            ax[i][j].plot(x_visual, y_visual)
 x_visual = np.linspace(-1,1)
-y_visual = -(lambdas[0] / lambdas[1]) * x_visual - b / lambdas[5]
-ax.plot(x_visual, y_visual)
+y_visual = -(lambdas[0] / lambdas[4]) * x_visual - b / lambdas[4]
+ax1.plot(x_visual, y_visual)
 # ax.scatter(
 #     clf.support_vectors_[:, 0],
 #     clf.support_vectors_[:, 5],
@@ -93,5 +101,6 @@ ax.plot(x_visual, y_visual)
 
 print(lambdas)
 
-ax.scatter(X[:, 0], X[:, 1], c=Y, s=1, cmap=plt.cm.Paired)
+ax1.scatter(X[:, 0], X[:, 4], c=Y, s=1, cmap=plt.cm.Paired)
+
 plt.show()

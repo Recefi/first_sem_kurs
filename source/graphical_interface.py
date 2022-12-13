@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import source.gen_selection as gs
 
 def get_table(title,xNames,yNames,array):
     fig, ax = plt.subplots() 
@@ -20,7 +21,15 @@ def get_table(title,xNames,yNames,array):
     plt.show() 
 
 
-
+def get_sinss():
+    fig, ax = plt.subplots()
+    x = np.linspace(0, 1)
+    y = gs.A_jun[gs.maxf_ind] + gs.B_jun[gs.maxf_ind] * np.cos(2 * np.pi * x)
+    ax.plot(x, y, c="red")
+    x = np.linspace(0, 1)
+    y = gs.A_adult[gs.maxf_ind] + gs.B_adult[gs.maxf_ind] * np.cos(2 * np.pi * x)
+    ax.plot(x, y, c="blue")
+    plt.show
 
 def get_gistogram(array, tittle):
     a_min = min(array)

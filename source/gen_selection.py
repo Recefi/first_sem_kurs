@@ -7,7 +7,7 @@ import numpy as np
 #А - отвечает за глубину погружения
 #B - за амплитуду колебаний
 #Количество параметров А и В
-n = 16 #//4
+n = 40 #//4
 A_jun = []
 B_jun = []
 A_adult = []
@@ -15,13 +15,16 @@ B_adult = []
 for i in range(n):
     for sign in [-1,1]:
         for sign_2 in [-1,1]:
-            A_jun.append(random.random()*(-param.depth))
-            B_jun.append(random.random()* min(-A_jun[i], A_jun[i]+param.depth)*sign)
+            A_jun.append(np.random.random()*(-param.depth))
+            m_j=min(-A_jun[-1], A_jun[-1]+param.depth)
+            B_jun.append(np.random.random()*m_j*sign)
 
             A_adult.append(random.random()*(-param.depth))
-            B_adult.append(random.random()* min(-A_adult[i], A_adult[i]+param.depth)*sign_2)
+            m_a= min(-A_adult[-1], A_adult[-1]+param.depth)
+            B_adult.append(random.random()*m_a*sign_2)
 
-
+maxf=0
+maxf_ind=0
 k = 0
 Fitness = []
 for i in range(4*n):
@@ -43,6 +46,10 @@ for i in range(4*n):
     if(4*r*p+np.square(p+q-s)>=0):
 
         fit = -s-p-q+(np.sqrt((4*r*p+np.square(p+q-s))))
+        if fit>maxf :
+            maxf=fit
+            maxf_ind=i
+
         res = [fit,M1,M2,M3,M4,M5,M6,M7,M8]
         k+=1
         for i in range(8):
@@ -52,6 +59,7 @@ for i in range(4*n):
 
 
 print(k)
+
 
 
 classification_Table = np.zeros((len(Fitness),len(Fitness)))
