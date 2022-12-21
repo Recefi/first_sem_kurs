@@ -1,8 +1,8 @@
 depth = 140
 optimal_depth = 80
 
-sigma1 = 0.25
-sigma2 = 0.003
+sigma1 = 1
+sigma2 = 1
 alpha_j=0.0016
 alpha_a=0.006
 beta_j=0.0000007

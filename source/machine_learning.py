@@ -12,48 +12,9 @@ from sklearn.inspection import DecisionBoundaryDisplay
 
 
 X=gs.selection[:,1:]
-print(X)
+#print(X)
 Y = np.transpose(gs.selection[:,0])
-print(Y)
-
-# we create 40 separable points
-# X = []
-# y = []
-# for v in range(len(gs.Macroparameters[1])):
-#     for w in range(len(gs.Macroparameters[1])):
-#         x=[]
-#         if(w==v):
-#             continue
-#         if (gs.classification_Table[v][w]!=0):
-#             for i in range(8):
-#                 x.append(gs.Macroparameters[i][v]-gs.Macroparameters[i][w])
-#             for i in range(8):
-#                 for j in range(i,8):
-#                     x.append(gs.M_sqr[i][j][v]-gs.M_sqr[i][j][w])
-#             y.append(gs.classification_Table[v][w])
-#             X.append(x)
-                    
-
-
-                    
-# for i in range(len(X)):
-#     print(len(X[i]))
-
-# print(X[1])
-# X= fn.transpose(X)
-# print(len(X[1]))
-# print(X[1])
-# res=[[]for i in range(len(X))]
-# for i in range(len(X)):
-#     max_param = max([abs(mp) for mp in X[i]])
-#     for j in range(len(X[i])):
-#         res[i].append(X[i][j]/max_param)
-# X =res
-# print(X[1])
-# X = fn.transpose(res)
-
-
-
+#print(Y)
 
 
 # fit the model, don't regularize for illustration purposes

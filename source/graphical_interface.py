@@ -23,13 +23,14 @@ def get_table(title,xNames,yNames,array):
 
 def get_sinss():
     fig, ax = plt.subplots()
-    x = np.linspace(0, 1)
-    y = gs.A_jun[gs.maxf_ind] + gs.B_jun[gs.maxf_ind] * np.cos(2 * np.pi * x)
-    ax.plot(x, y, c="red")
-    x = np.linspace(0, 1)
-    y = gs.A_adult[gs.maxf_ind] + gs.B_adult[gs.maxf_ind] * np.cos(2 * np.pi * x)
-    ax.plot(x, y, c="blue")
-    plt.show
+    xj = np.linspace(0, 1)
+    yj = gs.A_jun[gs.maxf_ind] + gs.B_jun[gs.maxf_ind] * np.cos(2 * np.pi * xj)
+    ax.plot(xj, yj, c="blue")
+    xa = np.linspace(0, 1)
+    ya = gs.A_adult[gs.maxf_ind] + gs.B_adult[gs.maxf_ind] * np.cos(2 * np.pi * xa)
+    ax.plot(xa, ya, c="red")
+    plt.ylim([-140, 0])
+    plt.show()
 
 def get_gistogram(array, tittle):
     a_min = min(array)
