@@ -2,6 +2,7 @@ import random
 import source.param as param
 import math
 import numpy as np
+import pandas as pd
 
 #Двустадийная модель
 #А - отвечает за глубину погружения
@@ -14,24 +15,39 @@ A_adult = []
 B_adult = []
 for i in range(n):
     a_j = np.random.random()*(-param.depth)
-    m_j= min(-a_j, a_j+param.depth)
-    b_j = np.random.random()*m_j
+    m_j = min(-a_j, a_j+param.depth)
+    b_j = np.random.uniform(-m_j, m_j)
     a_a = np.random.random()*(-param.depth)
     m_a = min(-a_a, a_a+param.depth)
-    b_a = np.random.random()*m_a
+    b_a = np.random.uniform(-m_a, m_a)
 
     A_jun.append(a_j)
     A_jun.append(a_j)
-    A_adult.append(a_j)
-    A_adult.append(a_j)
+    A_adult.append(a_a)
+    A_adult.append(a_a)
     B_jun.append(b_j)
     B_jun.append(-b_j)
     B_adult.append(b_a)
     B_adult.append(-b_a)
 
+# A_jun.append(-20.73)
+# B_jun.append(-3.93)
+# A_adult.append(-51.10)
+# B_adult.append(-39.17)
 
 
+# data1 =pd.DataFrame(data = {'Aj': A_jun, 'Bj': B_jun})
+# data2 =pd.DataFrame(data = {'Aa': A_adult, 'Ba': B_adult})
+# data=pd.concat([data1, data2], axis=1)
+# # print(data)
+# data.to_csv("data.csv", index=True)
 
+stratData = pd.read_csv("data.csv")
+A_jun = stratData['Aj'].tolist()
+A_adult = stratData['Aa'].tolist() 
+B_jun = stratData['Bj'].tolist()
+B_adult = stratData['Ba'].tolist() 
+n = stratData.shape[0] // 2
 
 maxf=0
 maxf_ind=0
@@ -72,6 +88,16 @@ print("maxf:",maxf)
 print("A max", A_jun[maxf_ind])
 print(k)
 
+MColumns = ['fit']
+for i in range(1, 9):
+    MColumns.append('M' + str(i))
+for i in range(1, 9):
+    for j in range(i, 9):
+        MColumns.append('M'+str(i) + 'M'+str(j))
+
+fit_data =pd.DataFrame(Fitness, columns=MColumns)
+#print(fit_data)
+fit_data.to_csv("fit_data.csv", index=False)
 
 
 classification_Table = np.zeros((len(Fitness),len(Fitness)))
@@ -103,7 +129,16 @@ for i in range(len(Fitness)):
 
 selection = np.array(selection)
 
+MColumns[0] = 'sel'
+sel_data = pd.DataFrame(selection, columns=MColumns)
+#print(sel_data)
+sel_data.to_csv("sel_data.csv", index=False)
+
 # Нормирование
 for i in range(len(selection[0])):
     max = np.max(np.abs(selection[:,i]))
     selection[:,i]/=max
+
+norm_sel_data = pd.DataFrame(selection, columns=MColumns)
+#print(norm_sel_data)
+norm_sel_data.to_csv("norm_sel_data.csv", index=False)

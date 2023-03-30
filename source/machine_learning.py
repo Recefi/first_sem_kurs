@@ -6,10 +6,9 @@ from sklearn import svm
 from sklearn import preprocessing
 from sklearn.datasets import make_blobs
 from sklearn.inspection import DecisionBoundaryDisplay
-
-
-
-
+from sklearn.metrics import accuracy_score
+from sklearn.model_selection import train_test_split
+from sklearn import model_selection
 
 X=gs.selection[:,1:]
 #print(X)
@@ -17,11 +16,20 @@ Y = np.transpose(gs.selection[:,0])
 #print(Y)
 
 
+X_train, X_test, Y_train, Y_test=train_test_split(X, Y, test_size=0.20)
 # fit the model, don't regularize for illustration purposes
-clf = svm.SVC(kernel="linear", C=1000)
-clf.fit(X, Y)
-print(len(X))
+clf = svm.SVC(kernel="linear")
+clf.fit(X_train, Y_train)
+print(len(X_train))
 #plt.scatter(X[:, 0], X[:, 5], c=Y, s=3, cmap=plt.cm.Paired)
+
+predictions = clf.predict(X_test)
+print('Точность классификатора:')
+print('     SVM: ', accuracy_score(predictions, Y_test)*100)
+
+# SVM = model_selection.cross_val_score(clf, X, Y)
+# print('Logloss:')
+# print('     SVM: ', SVM.std())
 
 # plot the decision function
 ax1 = plt.gca()
@@ -38,6 +46,7 @@ ax1 = plt.gca()
 # plot support vectors
 lambdas = clf.coef_[0]
 b = clf.intercept_[0]
+
 fig, ax = plt.subplots(8,8)
 for i in range(8):
     for j in range(8):
@@ -47,6 +56,7 @@ for i in range(8):
             x_visual = np.linspace(-1, 1)
             y_visual = -(lambdas[i] / lambdas[j]) * x_visual - b / lambdas[j]
             ax[i][j].plot(x_visual, y_visual)
+
 x_visual = np.linspace(-1,1)
 y_visual = -(lambdas[0] / lambdas[4]) * x_visual - b / lambdas[4]
 ax1.plot(x_visual, y_visual)

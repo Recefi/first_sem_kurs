@@ -29,7 +29,7 @@ def get_sinss():
     xa = np.linspace(0, 1)
     ya = gs.A_adult[gs.maxf_ind] + gs.B_adult[gs.maxf_ind] * np.cos(2 * np.pi * xa)
     ax.plot(xa, ya, c="red")
-    plt.ylim([-140, 0])
+    #plt.ylim([-140, 0])
     plt.show()
 
 def get_gistogram(array, tittle):
@@ -39,7 +39,7 @@ def get_gistogram(array, tittle):
 
     histMp.hist(array, bins=50, linewidth=0.5, edgecolor="white")
 
-    histMp.set(xlim=(a_min, a_max), xticks=np.linspace(a_min, a_max, 9))
+    histMp.set(xlim=(-1, 1), xticks=np.linspace(a_min, a_max, 9))
     histMp.set_title(tittle)
     plt.show()
 
