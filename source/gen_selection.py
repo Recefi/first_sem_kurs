@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 
 #Двустадийная модель
-#А - отвечает за глубину погружения
+#А - отвечает за среднюю глубину погружения
 #B - за амплитуду колебаний
 #Количество параметров А и В
 n = 100 #//4
@@ -30,18 +30,20 @@ for i in range(n):
     B_adult.append(b_a)
     B_adult.append(-b_a)
 
+# Лучшая точка у других групп
 # A_jun.append(-20.73)
 # B_jun.append(-3.93)
 # A_adult.append(-51.10)
 # B_adult.append(-39.17)
 
-
-# data1 =pd.DataFrame(data = {'Aj': A_jun, 'Bj': B_jun})
-# data2 =pd.DataFrame(data = {'Aa': A_adult, 'Ba': B_adult})
-# data=pd.concat([data1, data2], axis=1)
+# # Заносим A и B в файл
+# data1 = pd.DataFrame(data = {'Aj': A_jun, 'Bj': B_jun})
+# data2 = pd.DataFrame(data = {'Aa': A_adult, 'Ba': B_adult})
+# data = pd.concat([data1, data2], axis=1)
 # # print(data)
 # data.to_csv("data.csv", index=True)
 
+# Считываем A и B из файла
 stratData = pd.read_csv("data.csv")
 A_jun = stratData['Aj'].tolist()
 A_adult = stratData['Aa'].tolist() 
@@ -53,24 +55,25 @@ maxf=0
 maxf_ind=0
 k = 0
 Fitness = []
+Index = []
 for i in range(2*n):
     res = []
 
     M1 = param.sigma1 * (A_jun[i] + param.depth)
-    M2 = -param.sigma2*(A_jun[i] + param.depth + B_jun[i]/2)
-    M3 = -2*np.square(math.pi*B_jun[i])
-    M4 = -(np.square(A_jun[i]+param.optimal_depth)-np.square(B_jun[i])/2)
-    M5 = param.sigma1*(A_adult[i] + param.depth)
-    M6 = -param.sigma2*(A_adult[i] + param.depth + B_adult[i]/2)
-    M7 = -2*np.square(math.pi*B_adult[i])
-    M8 = -(np.square(A_adult[i]+param.optimal_depth)-np.square(B_adult[i])/2)
+    M2 = -param.sigma2 * (A_jun[i] + param.depth + B_jun[i]/2)
+    M3 = -2*(math.pi*B_jun[i])**2
+    M4 = -((A_jun[i]+param.optimal_depth)**2-(B_jun[i]**2)/2)
+    M5 = param.sigma1 * (A_adult[i] + param.depth)
+    M6 = -param.sigma2 * (A_adult[i] + param.depth + B_adult[i]/2)
+    M7 = -2*(math.pi*B_adult[i])**2
+    M8 = -((A_adult[i]+param.optimal_depth)**2-(B_adult[i]**2)/2)
 
     p = param.alpha_j*M1 + param.beta_j*M3 + param.delta_j*M4
     r = param.alpha_a*M5 + param.beta_a*M7 + param.delta_a*M8
     q = param.gamma_j*M2
     s = param.gamma_a*M6
     if(4*r*p+np.square(p+q-s)>=0):
-        fit = -s-p-q+(np.sqrt((4*r*p+np.square(p+q-s))))
+        fit = -s-p-q+(np.sqrt((4*r*p+(p+q-s)**2)))
         print('fit',fit)
         if fit>maxf:
             maxf=fit
@@ -83,6 +86,7 @@ for i in range(2*n):
             for j in range(m,8):
                 res.append(res[m+1]*res[j+1])
         Fitness.append(res)
+        Index.append(i)
 
 print("maxf:",maxf)
 print("A max", A_jun[maxf_ind])
@@ -95,10 +99,15 @@ for i in range(1, 9):
     for j in range(i, 9):
         MColumns.append('M'+str(i) + 'M'+str(j))
 
-fit_data =pd.DataFrame(Fitness, columns=MColumns)
+# Заносим Fitness в файл
+fit_data = pd.DataFrame(Fitness, columns=MColumns)
+fit_data.index = Index
 #print(fit_data)
-fit_data.to_csv("fit_data.csv", index=False)
+fit_data.to_csv("fit_data.csv", index=True)
 
+# # Считываем Fitness из файла
+# fit_data = pd.read_csv("fit_data.csv", index_col=0)
+# Fitness = fit_data.values.tolist()
 
 classification_Table = np.zeros((len(Fitness),len(Fitness)))
 
@@ -115,8 +124,6 @@ for i in range(len(Fitness)):
             classification_Table[j,i] = 1
 
 selection = []
-
-
 for i in range(len(Fitness)):
     for j in range(len(Fitness)):
         if(j==i):
@@ -130,6 +137,7 @@ for i in range(len(Fitness)):
 selection = np.array(selection)
 
 MColumns[0] = 'sel'
+# Заносим selection в файл
 sel_data = pd.DataFrame(selection, columns=MColumns)
 #print(sel_data)
 sel_data.to_csv("sel_data.csv", index=False)
@@ -139,6 +147,7 @@ for i in range(len(selection[0])):
     max = np.max(np.abs(selection[:,i]))
     selection[:,i]/=max
 
+# Заносим нормированный selection в файл
 norm_sel_data = pd.DataFrame(selection, columns=MColumns)
 #print(norm_sel_data)
 norm_sel_data.to_csv("norm_sel_data.csv", index=False)
