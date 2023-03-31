@@ -44,18 +44,18 @@ for i in range(n):
 # stratData.to_csv("data.csv", index=True)
 
 # Считываем A и B из файла
-stratData = pd.read_csv("data.csv")
-A_jun = stratData['Aj'].tolist()
-A_adult = stratData['Aa'].tolist() 
-B_jun = stratData['Bj'].tolist()
-B_adult = stratData['Ba'].tolist() 
+strat_data = pd.read_csv("data.csv")
+A_jun = strat_data['Aj'].tolist()
+A_adult = strat_data['Aa'].tolist() 
+B_jun = strat_data['Bj'].tolist()
+B_adult = strat_data['Ba'].tolist() 
 
 maxf=0
 maxf_ind=0
 k = 0
 Fitness = []
 Indexes = []
-for i in range(stratData.shape[0]):  # 2*n, если вручную не редактируем выборку
+for i in range(strat_data.shape[0]):  # 2*n, если вручную не редактируем выборку
     res = []
 
     M1 = param.sigma1 * (A_jun[i] + param.depth)
@@ -88,7 +88,7 @@ for i in range(stratData.shape[0]):  # 2*n, если вручную не ред�
         Indexes.append(i)
 
 print("maxf:",maxf)
-print("A max", A_jun[maxf_ind])
+print("maxf_ind",maxf_ind)
 print(k)
 
 MColumns = ['fit']
@@ -107,6 +107,9 @@ for i in range(1, 9):
 # Считываем Fitness из файла
 fit_data = pd.read_csv("fit_data.csv", index_col=0)
 Fitness = fit_data.values.tolist()
+# Получаем индекс макс.значения фитнеса с учетом редактирования fit_data.csv
+maxf_ind = fit_data[['fit']].idxmax(axis='index')[0]
+print("new maxf_ind",maxf_ind)
 
 classification_Table = np.zeros((len(Fitness),len(Fitness)))
 
