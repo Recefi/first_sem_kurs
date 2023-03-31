@@ -1,6 +1,11 @@
 depth = 140
 optimal_depth = 80
 
+# # У других групп:
+# depth = 120
+# optimal_depth = 70
+# # остальные параметры те же
+
 sigma1 = 1
 sigma2 = 1
 alpha_j=0.0016
