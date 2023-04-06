@@ -10,8 +10,8 @@ import source.test_result as tr
 #gui.get_table('A',['A'],[[i] for i in range(row_table)],np.transpose(gs.A_jun)[:row_table])
 # gui.get_table('Norm macroparams',['M1','M2','M3','M4','M5','M6','M7','M8'],[[i] for i in range(row_table)],np.transpose(gs.norm_Macroparameters)[:row_table])
 
-for i in range(8):
-    gui.get_gistogram(gs.selection[i],"M"+str(i+1))
+for i in range(1,9):
+    gui.get_gistogram(np.transpose(gs.selection)[i],"M"+str(i))
 #print(gs.A_jun[gs.maxf_ind])
 #print(gs.B_jun[gs.maxf_ind])
 gui.get_sinss()

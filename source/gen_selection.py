@@ -138,7 +138,7 @@ for i in range(len(Fitness)):
 
 selection = np.array(selection)
 
-MColumns[0] = 'sel'
+MColumns[0] = 'class'
 # Заносим selection в файл
 sel_data = pd.DataFrame(selection, columns=MColumns)
 #print(sel_data)
