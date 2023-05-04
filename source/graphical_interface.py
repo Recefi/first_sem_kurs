@@ -2,35 +2,19 @@ import matplotlib.pyplot as plt
 import numpy as np
 import source.gen_selection as gs
 
-def get_table(title,xNames,yNames,array):
-    fig, ax = plt.subplots() 
-    ax.set_axis_off() 
-
-    table = ax.table( 
-        cellText = array,    
-        rowLabels = yNames,
-        colLabels = xNames,
-        cellLoc ='center',  
-        loc ='upper left')         
-
-    table.auto_set_font_size(False)
-    table.set_fontsize(10)
-
-    ax.set_title(title,fontweight ="bold") 
-
-    plt.show() 
-
-
-def get_sinss():
+def get_sinss(A_j, B_j, A_a, B_a):
     fig, ax = plt.subplots()
+
     xj = np.linspace(0, 1)
-    yj = gs.A_jun[gs.maxf_ind] + gs.B_jun[gs.maxf_ind] * np.cos(2 * np.pi * xj)
+    yj = A_j + B_j * np.cos(2 * np.pi * xj)
     ax.plot(xj, yj, c="blue")
+
     xa = np.linspace(0, 1)
-    ya = gs.A_adult[gs.maxf_ind] + gs.B_adult[gs.maxf_ind] * np.cos(2 * np.pi * xa)
+    ya = A_a + B_a * np.cos(2 * np.pi * xa)
     ax.plot(xa, ya, c="red")
+
     #plt.ylim([-140, 0])
-    plt.show()
+    plt.draw()
 
 def get_gistogram(array, tittle):
     a_min = min(array)
@@ -41,10 +25,7 @@ def get_gistogram(array, tittle):
 
     histMp.set(xlim=(-1, 1), xticks=np.linspace(a_min, a_max, 9))
     histMp.set_title(tittle)
-    plt.show()
-
-
-
+    plt.draw()
 
 def get_correllation(array, arg_names):
     array_cor=np.round(np.corrcoef(array),2)
@@ -61,4 +42,4 @@ def get_correllation(array, arg_names):
                         ha="center", va="center", color="r")
 
     fig.tight_layout()
-    plt.show()
+    plt.draw()
