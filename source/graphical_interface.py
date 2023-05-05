@@ -1,6 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
+from scipy import stats
 import source.gen_selection as gs
+
 
 def get_sinss(A_j, B_j, A_a, B_a):
     fig, ax = plt.subplots()
@@ -14,7 +16,7 @@ def get_sinss(A_j, B_j, A_a, B_a):
     ax.plot(xa, ya, c="red")
 
     #plt.ylim([-140, 0])
-    plt.draw()
+    plt.show()
 
 def get_gistogram(array, tittle):
     a_min = min(array)
@@ -25,7 +27,7 @@ def get_gistogram(array, tittle):
 
     histMp.set(xlim=(-1, 1), xticks=np.linspace(a_min, a_max, 9))
     histMp.set_title(tittle)
-    plt.draw()
+    plt.show()
 
 def get_correllation(array, arg_names):
     array_cor=np.round(np.corrcoef(array),2)
@@ -42,4 +44,50 @@ def get_correllation(array, arg_names):
                         ha="center", va="center", color="r")
 
     fig.tight_layout()
+    plt.show()
+
+
+def get_regLine(fitData):
+    x = fitData['M1']
+    y = fitData['M2']
+    slope, intercept, r, p, stderr = stats.linregress(x, y)
+
+    fig, ax = plt.subplots()
+    ax.scatter(x, y, s=3, label = str(len(x))+" points", color="red")
+    ax.plot(x, intercept + slope * x, label = f'corr={r:.2f}', color="blue")
+    ax.set_xlabel('M1')
+    ax.set_ylabel('M2')
+    ax.legend()
+    xlim = ax.get_xlim()
+    ylim = ax.get_ylim()
+
     plt.draw()
+    return intercept, slope, xlim, ylim
+
+def get_fixRegLine(fitData, xlim, ylim):
+    x = fitData['M1']
+    y = fitData['M2']
+    slope, intercept, r, p, stderr = stats.linregress(x, y)
+
+    fig, ax = plt.subplots()
+    ax.set_xlim(xlim)
+    ax.set_ylim(ylim)
+    ax.scatter(x, y, s=3, label = str(len(x))+" points", color="red")
+    ax.plot(x, intercept + slope * x, label = f'corr={r:.2f}', color="blue")
+    ax.set_xlabel('M1')
+    ax.set_ylabel('M2')
+    ax.legend()
+
+    plt.draw()
+
+def clean_regLine(fitData, a, b, eps):
+    x0 = fitData['M1']
+    y0 = fitData['M2']
+    indexes = []
+    for i in x0.index:
+        y1 = a - eps + b*x0[i]
+        y2 = a + eps + b*x0[i]
+        if (y0[i] > y1 and y0[i] < y2):
+            indexes.append(i)
+    return fitData.drop(indexes)
+
