@@ -64,6 +64,17 @@ def get_regLine(fitData):
     plt.draw()
     return intercept, slope, xlim, ylim
 
+def clean_regLine(fitData, a, b, eps):
+    x0 = fitData['M1']
+    y0 = fitData['M2']
+    indexes = []
+    for i in x0.index:
+        y1 = a - eps + b*x0[i]
+        y2 = a + eps + b*x0[i]
+        if (y0[i] > y1 and y0[i] < y2):
+            indexes.append(i)
+    return fitData.drop(indexes)
+
 def get_fixRegLine(fitData, xlim, ylim):
     x = fitData['M1']
     y = fitData['M2']
@@ -78,16 +89,5 @@ def get_fixRegLine(fitData, xlim, ylim):
     ax.set_ylabel('M2')
     ax.legend()
 
-    plt.draw()
-
-def clean_regLine(fitData, a, b, eps):
-    x0 = fitData['M1']
-    y0 = fitData['M2']
-    indexes = []
-    for i in x0.index:
-        y1 = a - eps + b*x0[i]
-        y2 = a + eps + b*x0[i]
-        if (y0[i] > y1 and y0[i] < y2):
-            indexes.append(i)
-    return fitData.drop(indexes)
+    plt.show()
 

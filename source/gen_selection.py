@@ -2,10 +2,7 @@ import source.param as param
 import numpy as np
 
 def genStrats(n):
-    #Двустадийная модель
-    #А - отвечает за среднюю глубину погружения
-    #B - за амплитуду колебаний
-    #Количество параметров А и В
+    """Генерация стратегий"""
     A_jun = []
     B_jun = []
     A_adult = []
@@ -41,6 +38,7 @@ def genStrats(n):
     return A_jun, B_jun, A_adult, B_adult, range(4*n)
 
 def calcFitness(A_jun, B_jun, A_adult, B_adult, stratIndexes):
+    """Подсчет фитнеса и макропараметров"""
     maxf=0
     maxf_ind=0
     k = 0
@@ -86,6 +84,7 @@ def calcFitness(A_jun, B_jun, A_adult, B_adult, stratIndexes):
     return Fitness, Indexes, maxf_ind
 
 def calcSelection(Fitness):
+    """Подсчет итоговой выборки"""
     classification_Table = np.zeros((len(Fitness),len(Fitness)))
 
     for i in range(len(Fitness)):
@@ -113,7 +112,7 @@ def calcSelection(Fitness):
     return selection
 
 def normSelection(selection):
-    """Нормирование"""
+    """Нормирование итоговой выборки"""
     selection = np.array(selection)
     for i in range(len(selection[0])):
         max = np.max(np.abs(selection[:,i]))
