@@ -1,22 +1,38 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy import stats
-import source.gen_selection as gs
+import source.input_output as inOut
 
 
-def get_sinss(A_j, B_j, A_a, B_a):
+def get_sinss(Aj, Bj, Aa, Ba):
     fig, ax = plt.subplots()
 
     xj = np.linspace(0, 1)
-    yj = A_j + B_j * np.cos(2 * np.pi * xj)
+    yj = Aj + Bj * np.cos(2 * np.pi * xj)
     ax.plot(xj, yj, c="blue")
 
     xa = np.linspace(0, 1)
-    ya = A_a + B_a * np.cos(2 * np.pi * xa)
+    ya = Aa + Ba * np.cos(2 * np.pi * xa)
     ax.plot(xa, ya, c="red")
 
     #plt.ylim([-140, 0])
-    plt.show()
+    plt.draw()
+
+def get_all_sinss(stratData):
+    fig, ax = plt.subplots()
+    Aj, Bj, Aa, Ba = inOut.parseStratData(stratData)
+
+    for i in Aj.index:
+        xj = np.linspace(0, 1)
+        yj = Aj[i] + Bj[i] * np.cos(2 * np.pi * xj)
+        ax.plot(xj, yj, c="blue")
+
+        xa = np.linspace(0, 1)
+        ya = Aa[i] + Ba[i] * np.cos(2 * np.pi * xa)
+        ax.plot(xa, ya, c="red")
+
+    #plt.ylim([-140, 0])
+    plt.draw()
 
 def get_gistogram(array, tittle):
     a_min = min(array)
@@ -44,19 +60,17 @@ def get_correllation(array, arg_names):
                         ha="center", va="center", color="r")
 
     fig.tight_layout()
-    plt.show()
+    plt.draw()
 
 
-def get_regLine(fitData):
-    x = fitData['M1']
-    y = fitData['M2']
+def get_regLine(x, y):
     slope, intercept, r, p, stderr = stats.linregress(x, y)
 
     fig, ax = plt.subplots()
     ax.scatter(x, y, s=3, label = str(len(x))+" points", color="red")
     ax.plot(x, intercept + slope * x, label = f'corr={r:.2f}', color="blue")
-    ax.set_xlabel('M1')
-    ax.set_ylabel('M2')
+    ax.set_xlabel(x.name)
+    ax.set_ylabel(y.name)
     ax.legend()
     xlim = ax.get_xlim()
     ylim = ax.get_ylim()
@@ -64,20 +78,18 @@ def get_regLine(fitData):
     plt.draw()
     return intercept, slope, xlim, ylim
 
-def clean_regLine(fitData, a, b, eps):
-    x0 = fitData['M1']
-    y0 = fitData['M2']
+def clean_regLine(fitData, xName, yName, a, b, shift):
+    x0 = fitData[xName]
+    y0 = fitData[yName]
     indexes = []
     for i in x0.index:
-        y1 = a - eps + b*x0[i]
-        y2 = a + eps + b*x0[i]
+        y1 = a - shift + b*x0[i]
+        y2 = a + shift + b*x0[i]
         if (y0[i] > y1 and y0[i] < y2):
             indexes.append(i)
     return fitData.drop(indexes)
 
-def get_fixRegLine(fitData, xlim, ylim):
-    x = fitData['M1']
-    y = fitData['M2']
+def get_limRegLine(x, y, xlim, ylim):
     slope, intercept, r, p, stderr = stats.linregress(x, y)
 
     fig, ax = plt.subplots()
@@ -85,9 +97,19 @@ def get_fixRegLine(fitData, xlim, ylim):
     ax.set_ylim(ylim)
     ax.scatter(x, y, s=3, label = str(len(x))+" points", color="red")
     ax.plot(x, intercept + slope * x, label = f'corr={r:.2f}', color="blue")
-    ax.set_xlabel('M1')
-    ax.set_ylabel('M2')
+    ax.set_xlabel(x.name)
+    ax.set_ylabel(y.name)
     ax.legend()
 
-    plt.show()
+    plt.draw()
 
+def fixCorr(fitData, xName, yName, shift):
+    """
+    исправление корреляции между xName и yName 
+        удалением стратегий с отступами от линии регрессии на shift
+    """
+    a, b, xlim, ylim = get_regLine(fitData[xName], fitData[yName])
+    fitData = clean_regLine(fitData, xName, yName, a, b, shift)
+    get_limRegLine(fitData[xName], fitData[yName], xlim, ylim)
+
+    return fitData

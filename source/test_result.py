@@ -1,6 +1,7 @@
 import source.param as param
 import source.machine_learning as ml
 import pandas as pd
+import numpy as np
 from numpy import sqrt
 from sklearn.metrics.pairwise import cosine_similarity
 
@@ -117,9 +118,23 @@ def calcTeylor(MData, bstPntId):
 
 def compareCoefs(bstPntId):
     """Сравниваем векторы"""
-    coefsData = pd.read_csv("inOut/split_coefs_data.csv")
+    coefsData = pd.read_csv("inOut/split_coefs_data.csv", index_col=0)
     machineLam = coefsData.loc[0].to_list()
     calcLam = coefsData.loc[bstPntId].to_list()
     for i in range(44):
         print(calcLam[i], "vs", machineLam[i])
 
+def compareNormCoefs(bstPntId):
+    """Сравниваем нормированные векторы"""
+    coefsData = pd.read_csv("inOut/split_coefs_data.csv", index_col=0)
+    machineLam = coefsData.loc[0]
+    calcLam = coefsData.loc[bstPntId]
+    #print(calcLam.index)
+    
+    # machineLam = np.array(machineLam)
+    # calcLam = np.array(calcLam)
+    machineLam/=(np.max(np.abs(machineLam)))
+    calcLam/=(np.max(np.abs(calcLam)))
+
+    for i in range(44):
+        print(calcLam[i], "vs", machineLam[i])

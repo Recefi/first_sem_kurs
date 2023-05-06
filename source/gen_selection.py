@@ -35,16 +35,26 @@ def genStrats(n):
         A_adult.append(a_a)
         B_adult.append(-b_a)
 
-    return A_jun, B_jun, A_adult, B_adult, range(4*n)
+    return A_jun, B_jun, A_adult, B_adult
 
-def calcFitness(A_jun, B_jun, A_adult, B_adult, stratIndexes):
-    """Подсчет фитнеса и макропараметров"""
+def calcFitness(stratData):
+    """
+    Подсчет фитнеса и макропараметров
+        Возвращает: Fitness, FitIndxs, maxf_ind
+            FitIndxs[индекс Fitness] = исходный индекс
+                maxf_ind в исходных индексах, а не в индексах Fitness
+    """
+    A_jun = stratData['Aj']
+    B_jun = stratData['Bj']
+    A_adult = stratData['Aa']
+    B_adult = stratData['Ba']
+
     maxf=0
     maxf_ind=0
     k = 0
     Fitness = []
-    Indexes = []
-    for i in range(len(A_jun)):
+    FitIndxs = []
+    for i in A_jun.index:  # используем исходные индексы
         res = []
 
         M1 = param.sigma1 * (A_jun[i] + param.depth)
@@ -76,12 +86,12 @@ def calcFitness(A_jun, B_jun, A_adult, B_adult, stratIndexes):
                 for j in range(m,8):
                     res.append(res[m+1]*res[j+1])
             Fitness.append(res)
-            Indexes.append(stratIndexes[i])
+            FitIndxs.append(i)
     
     print("maxf:",maxf)
     print("maxf_ind",maxf_ind)
     print(k)
-    return Fitness, Indexes, maxf_ind
+    return Fitness, FitIndxs, maxf_ind
 
 def calcSelection(Fitness):
     """Подсчет итоговой выборки"""
