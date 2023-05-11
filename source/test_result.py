@@ -33,16 +33,15 @@ def getDerivatives(p, q, r, s):
 
     return hp, hq, hr, hs, hpp, hpq, hpr, hps, hqq, hqr, hqs, hrr, hrs, hss
 
-def findBestPoint(MData, machineCoefs):
-    """Ищем лучшую точку для разложения по Тейлору, сравнивая косинусы между векторами вычисленных коэффициентов и полученным вектором машинных"""
-    M1 = MData['M1'].tolist()
-    M2 = MData['M2'].tolist()      
-    M3 = MData['M3'].tolist()   
-    M4 = MData['M4'].tolist()   
-    M5 = MData['M5'].tolist()
-    M6 = MData['M6'].tolist()
-    M7 = MData['M7'].tolist()
-    M8 = MData['M8'].tolist()
+def getCoefData1(fitData, machineCoefs):
+    M1 = fitData['M1'].tolist()
+    M2 = fitData['M2'].tolist()      
+    M3 = fitData['M3'].tolist()   
+    M4 = fitData['M4'].tolist()   
+    M5 = fitData['M5'].tolist()
+    M6 = fitData['M6'].tolist()
+    M7 = fitData['M7'].tolist()
+    M8 = fitData['M8'].tolist()
 
     lamCol = []
     for i in range(1,9):
@@ -50,10 +49,10 @@ def findBestPoint(MData, machineCoefs):
     for i in range(1,9):
         for j in range(i,9):
             lamCol.append('lam'+str(i)+str(j))
-
-    coefsData = pd.DataFrame({'Coefs': []})
-    coefsData.loc[len(coefsData)] = [machineCoefs]
-    for i in range(MData.shape[0]):
+    
+    coefs = []
+    coefs.append(machineCoefs)
+    for i in range(fitData.shape[0]):
         p = a_j*M1[i] + b_j*M3[i] + d_j*M4[i]
         r = a_a*M5[i] + b_a*M7[i] + d_a*M8[i]
         q = -g_j*M2[i]
@@ -72,32 +71,84 @@ def findBestPoint(MData, machineCoefs):
         hrr*b_a**2, hrr*2*b_a*d_a,
         hrr*d_a**2]
 
-        coefsData.loc[len(coefsData)] = [calcCoefs]
+        coefs.append(calcCoefs)
     
-    #coefsData.to_csv("inOut/coefs_data.csv", index=False)
-    splitCoefsData = pd.DataFrame(coefsData['Coefs'].tolist(), columns=lamCol)
-    splitCoefsData.to_csv("inOut/split_coefs_data.csv", index=True)
+    indexes = [-1]
+    indexes.extend(fitData.index)
+    coefData = pd.DataFrame(coefs, columns=lamCol, index=indexes)
+    coefData.to_csv("csv/coef_data.csv", index=True)
+    return coefData
 
-    cosines = cosine_similarity(splitCoefsData)[0]
+def getCoefData2(fitData, machineCoefs):
+    M1 = fitData['M1'].tolist()
+    M2 = fitData['M2'].tolist()      
+    M3 = fitData['M3'].tolist()   
+    M4 = fitData['M4'].tolist()   
+    M5 = fitData['M5'].tolist()
+    M6 = fitData['M6'].tolist()
+    M7 = fitData['M7'].tolist()
+    M8 = fitData['M8'].tolist()
+
+    lamCol = []
+    for i in range(1,9):
+        lamCol.append('lam'+str(i))
+    for i in range(1,9):
+        for j in range(i,9):
+            lamCol.append('lam'+str(i)+str(j))
+    
+    coefs = []
+    coefs.append(machineCoefs)
+    for i in range(fitData.shape[0]):
+        p = a_j*M1[i] + b_j*M3[i] + d_j*M4[i]
+        r = a_a*M5[i] + b_a*M7[i] + d_a*M8[i]
+        q = g_j*M2[i]
+        s = g_a*M6[i]
+
+        hp, hq, hr, hs, hpp, hpq, hpr, hps, hqq, hqr, hqs, hrr, hrs, hss = getDerivatives(p, q, r, s)
+
+        # Считаем коэффициенты разложения в данной точке (по строкам: при M1-M8, M11-M18, M22-M28, M33-M38, ..., M88)
+        calcCoefs = [hp*a_j, hq*g_j, hp*b_j, hp*d_j, hr*a_a, hs*g_a, hr*b_a, hr*d_a,
+        hpp*a_j**2, hpq*a_j*g_j, hpp*2*a_j*b_j, hpp*2*a_j*d_j, hpr*a_j*a_a, hps*a_j*g_a, hpr*a_j*b_a, hpr*a_j*d_a,
+        hqq*g_j**2, hpq*b_j*g_j, hpq*d_j*g_j, hqr*g_j*a_a, hqs*g_j*g_a, hqr*g_j*b_a, hqr*g_j*d_a,
+        hpp*b_j**2, hpp*2*b_j*d_j, hpr*b_j*a_a, hps*b_j*g_a, hpr*b_j*b_a, hpr*b_j*d_a,
+        hpp*d_j**2, hpr*d_j*a_a, hps*d_j*g_a, hpr*d_j*b_a, hpr*d_j*d_a,
+        hrr*a_a**2, hrs*a_a*g_a, hrr*2*a_a*b_a, hrr*2*a_a*d_a,
+        hss*g_a**2, hrs*b_a*g_a, hrs*d_a*g_a,
+        hrr*b_a**2, hrr*2*b_a*d_a,
+        hrr*d_a**2]
+
+        coefs.append(calcCoefs)
+    
+    indexes = [-1]
+    indexes.extend(fitData.index)
+    coefData = pd.DataFrame(coefs, columns=lamCol, index=indexes)
+    coefData.to_csv("csv/coef_data.csv", index=True)
+    return coefData
+
+def findBestPoint(coefData):
+    """Ищем лучшую точку для разложения по Тейлору, сравнивая косинусы между векторами вычисленных коэффициентов и полученным вектором машинных"""
+    cosines = cosine_similarity(coefData)[0]
     print(cosines)
 
     bestCosId = 1
-    for i in range(2, MData.shape[0]):
+    for i in range(2, coefData.shape[0]):
         if (cosines[i] > cosines[bestCosId]):
             bestCosId = i
-    return bestCosId
 
-def calcTeylor(MData, bstPntId):
+    print("bstPntId=", bestCosId - 1, ": ", cosines[bestCosId])
+    return bestCosId - 1
+
+def checkDerivatives(fitData, bstPntId):
     """Проверка правильно ли считаются производные (при не совсем ужасных косинусах считается +-верно)"""
-    trueFit = MData['fit'].tolist()
-    M1 = MData['M1'].tolist()
-    M2 = MData['M2'].tolist()
-    M3 = MData['M3'].tolist()
-    M4 = MData['M4'].tolist()
-    M5 = MData['M5'].tolist()
-    M6 = MData['M6'].tolist()
-    M7 = MData['M7'].tolist()
-    M8 = MData['M8'].tolist()
+    trueFit = fitData['fit'].tolist()
+    M1 = fitData['M1'].tolist()
+    M2 = fitData['M2'].tolist()
+    M3 = fitData['M3'].tolist()
+    M4 = fitData['M4'].tolist()
+    M5 = fitData['M5'].tolist()
+    M6 = fitData['M6'].tolist()
+    M7 = fitData['M7'].tolist()
+    M8 = fitData['M8'].tolist()
 
     p0 = a_j*M1[bstPntId] + b_j*M3[bstPntId] + d_j*M4[bstPntId]
     r0 = a_a*M5[bstPntId] + b_a*M7[bstPntId] + d_a*M8[bstPntId]
@@ -107,7 +158,7 @@ def calcTeylor(MData, bstPntId):
     fit0 = -s0-p0-q0+(sqrt((4*r0*p0+(p0+q0-s0)**2)))
 
     taylorFit = []
-    for i in range(MData.shape[0]):
+    for i in range(fitData.shape[0]):
         p = a_j*M1[i] + b_j*M3[i] + d_j*M4[i]
         r = a_a*M5[i] + b_a*M7[i] + d_a*M8[i]
         q = -g_j*M2[i]
@@ -116,25 +167,21 @@ def calcTeylor(MData, bstPntId):
         taylorFit.append(fit0 + hp*(p-p0) + hq*(q-q0) + hr*(r-r0) + hs*(s-s0) + 1/2*(hpp*(p-p0)**2 + hqq*(q-q0)**2 + hrr*(r-r0)**2 + hss*(s-s0)**2 + hpq*(p-p0)*(q-q0) + hpr*(p-p0)*(r-r0) + hps*(p-p0)*(s-s0) + hqr*(q-q0)*(r-r0) + hqs*(q-q0)*(s-s0) + hrs*(r-r0)*(s-s0)))
         print(taylorFit[i], "vs", trueFit[i])
 
-def compareCoefs(bstPntId):
-    """Сравниваем векторы"""
-    coefsData = pd.read_csv("inOut/split_coefs_data.csv", index_col=0)
-    machineLam = coefsData.loc[0].to_list()
-    calcLam = coefsData.loc[bstPntId].to_list()
+def compareCoefs(coefData, bstPntId):
+    """Сравниваем коэффициенты"""
+    machineLam = coefData.loc[-1].to_list()
+    calcLam = coefData.iloc[bstPntId+1].to_list()
     for i in range(44):
-        print(calcLam[i], "vs", machineLam[i])
+        print(coefData.columns[i], calcLam[i], "vs", machineLam[i])
 
-def compareNormCoefs(bstPntId):
-    """Сравниваем нормированные векторы"""
-    coefsData = pd.read_csv("inOut/split_coefs_data.csv", index_col=0)
-    machineLam = coefsData.loc[0]
-    calcLam = coefsData.loc[bstPntId]
+def compareNormCoefs(coefData, bstPntId):
+    """Сравниваем нормированные коэффициенты"""
+    machineLam = coefData.loc[-1]
+    calcLam = coefData.iloc[bstPntId+1]
     #print(calcLam.index)
     
-    # machineLam = np.array(machineLam)
-    # calcLam = np.array(calcLam)
     machineLam/=(np.max(np.abs(machineLam)))
     calcLam/=(np.max(np.abs(calcLam)))
 
     for i in range(44):
-        print(calcLam[i], "vs", machineLam[i])
+        print(coefData.columns[i], calcLam[i], "vs", machineLam[i])

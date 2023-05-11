@@ -3,7 +3,7 @@ import numpy as np
 
 def readStratData(fileName):
     """Чтение данных стратегий из файла"""
-    stratData = pd.read_csv("inOut/" + fileName + ".csv", index_col=0)
+    stratData = pd.read_csv("csv/" + fileName + ".csv", index_col=0)
     return stratData
 
 def parseStratData(stratData):
@@ -24,13 +24,13 @@ def collectStratData(A_j, B_j, A_a, B_a):
 
 def writeStratData(stratData, fileName):
     """Запись данных cтратегий в файл"""
-    stratData.to_csv("inOut/" + fileName + ".csv", index=True)
+    stratData.to_csv("csv/" + fileName + ".csv", index=True)
 
 
 
 def readFitData(fileName):
     """Чтение данных фитнеса и макропараметров из файла"""
-    fitData = pd.read_csv("inOut/" + fileName + ".csv", index_col=0)
+    fitData = pd.read_csv("csv/" + fileName + ".csv", index_col=0)
     return fitData
 
 def parseFitData(fitData):
@@ -59,7 +59,7 @@ def collectFitData(Fitness, FitIndxs):
 
 def writeFitData(fitData, fileName):
     """Запись данных фитнеса и макропараметров в файл"""
-    fitData.to_csv("inOut/" + fileName + ".csv", index=True)
+    fitData.to_csv("csv/" + fileName + ".csv", index=True)
 
 
 
@@ -73,14 +73,14 @@ def writeSelection(selection, fileName):
             cols.append('M'+str(i) + 'M'+str(j))
 
     selData = pd.DataFrame(selection, columns=cols)
-    selData.to_csv("inOut/" + fileName + ".csv", index=True)
+    selData.to_csv("csv/" + fileName + ".csv", index=True)
 
 def readSelection(fileName):
     """
     Чтение итоговой выборки из файла
         Существенно экономит время
     """
-    selData = pd.read_csv("inOut/" + fileName + ".csv")
+    selData = pd.read_csv("csv/" + fileName + ".csv")
     selection = selData.values
     return selection
 

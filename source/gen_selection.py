@@ -72,6 +72,11 @@ def calcFitness(stratData):
         q = -param.gamma_j*M2
         s = -param.gamma_a*M6
 
+        # print("p = ", p)
+        # print("r = ", r)
+        # print("q = ", q)
+        # print("s = ", s)
+
         if(4*r*p+np.square(p+q-s)>=0):
             fit = -s-p-q+(np.sqrt((4*r*p+(p+q-s)**2)))
             print('fit',fit)
@@ -80,7 +85,7 @@ def calcFitness(stratData):
                 maxf_ind=i
 
             res = [fit,M1,M2,M3,M4,M5,M6,M7,M8]
-            #print(p)
+
             k+=1
             for m in range(8):
                 for j in range(m,8):
@@ -102,7 +107,7 @@ def calcSelection(Fitness):
             if i == j:
                 classification_Table[i,j] = 0
                 continue  
-            if Fitness[i][0]>Fitness[j][0]:
+            if (Fitness[i][0]>Fitness[j][0]):
                 classification_Table[i,j] = 1
                 classification_Table[j,i] = -1
             else:

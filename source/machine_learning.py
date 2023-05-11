@@ -10,66 +10,65 @@ from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 from sklearn import model_selection
 
-def doSVM(selection):
+def runSVM(selection):
     X = selection[:,1:]
     #print(X)
     Y = selection[:,0]
     #print(Y)
 
     X_train, X_test, Y_train, Y_test=train_test_split(X, Y, test_size=0.20)
-    # fit the model, don't regularize for illustration purposes
-    clf = svm.SVC(kernel="linear")
+    # Основная часть
+    clf = svm.SVC(kernel="linear", C=10000)
     clf.fit(X_train, Y_train)
     print(len(X_train))
-    #plt.scatter(X[:, 0], X[:, 5], c=Y, s=3, cmap=plt.cm.Paired)
 
+    # Предсказание класса для X_test
     predictions = clf.predict(X_test)
     print('Точность классификатора:')
     print('     SVM: ', accuracy_score(predictions, Y_test)*100)
 
-    # plot the decision function
-    ax1 = plt.gca()
-    # DecisionBoundaryDisplay.from_estimator(
-    #     clf,
-    #     X,
-    #     plot_method="contour",
-    #     colors="k",
-    #     levels=[-1, 0, 1],
-    #     alpha=0.5,
-    #     linestyles=["--", "-", "--"],
-    #     ax=ax,
-    # )
-    # plot support vectors
-    lambdas = clf.coef_[0]
-    b = clf.intercept_[0]
+    lambdas = clf.coef_[0].tolist()
+    intercept = clf.intercept_[0]
+
+    return lambdas, intercept
+
+
+def drawSVM(selection, calcLam, machineLam, intercept, i, j):
+    X = selection[:,1:]
+    Y = selection[:,0]
+    
+    ax = plt.gca()
+    ax.set(ylim=(-1, 1))
+    ax.set_xlabel('M'+str(i+1))
+    ax.set_ylabel('M'+str(j+1))
+    ax.scatter(X[:, i], X[:, j], c=Y, s=1, cmap=plt.cm.Paired)
+
+    x_visual = np.linspace(-1,1)
+    y_visual = -(calcLam[i] / calcLam[j]) * x_visual # - intercept / calcLam[j]
+    ax.plot(x_visual, y_visual, color="red", label="Calc")
+    y_visual = -(machineLam[i] / machineLam[j]) * x_visual - intercept / machineLam[j]
+    ax.plot(x_visual, y_visual, color="blue", label="SVM")
+    ax.legend()
+
+    plt.draw()
+
+
+def showAllSVM(selection, calcLam, machineLam, intercept):
+    X = selection[:,1:]
+    Y = selection[:,0]
 
     fig, ax = plt.subplots(8,8)
     for i in range(8):
         for j in range(8):
             if i!=j :
                 ax[i][j].set(ylim=(-1, 1))
+                # ax[i][j].set_xlabel('M'+str(i+1))
+                # ax[i][j].set_ylabel('M'+str(j+1))
                 ax[i][j].scatter(X[:, i], X[:, j], c=Y, s=1, cmap=plt.cm.Paired)
                 x_visual = np.linspace(-1, 1)
-                y_visual = -(lambdas[i] / lambdas[j]) * x_visual - b / lambdas[j]
-                ax[i][j].plot(x_visual, y_visual)
-
-    x_visual = np.linspace(-1,1)
-    y_visual = -(lambdas[0] / lambdas[4]) * x_visual - b / lambdas[4]
-    ax1.plot(x_visual, y_visual)
-    # ax.scatter(
-    #     clf.support_vectors_[:, 0],
-    #     clf.support_vectors_[:, 5],
-    #     s=100,
-
-    #     linewidth=1,
-    #     facecolors="none",
-    #     edgecolors="k",
-    # )
-
-    print(lambdas)
-
-    ax1.scatter(X[:, 0], X[:, 4], c=Y, s=1, cmap=plt.cm.Paired)
+                y_visual = -(calcLam[i] / calcLam[j]) * x_visual # - intercept / calcLam[j]
+                ax[i][j].plot(x_visual, y_visual, color="red")
+                y_visual = -(machineLam[i] / machineLam[j]) * x_visual - intercept / machineLam[j]
+                ax[i][j].plot(x_visual, y_visual, color="blue")
 
     plt.show()
-
-    return lambdas
