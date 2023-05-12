@@ -18,7 +18,7 @@ def runSVM(selection):
 
     X_train, X_test, Y_train, Y_test=train_test_split(X, Y, test_size=0.20)
     # Основная часть
-    clf = svm.SVC(kernel="linear", C=10000)
+    clf = svm.SVC(kernel="linear")  # при C=1(по умолчанию) результаты почему-то лучше, чем при C=1000...
     clf.fit(X_train, Y_train)
     print(len(X_train))
 

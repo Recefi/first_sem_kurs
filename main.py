@@ -7,19 +7,21 @@ import source.machine_learning as ml
 import source.test_result as tr
 
 # Либо
-Aj, Bj, Aa, Ba = gs.genStrats(50)
+Aj, Bj, Aa, Ba = gs.genStrats(200)
 stratData = inOut.collectStratData(Aj, Bj, Aa, Ba)
-inOut.writeStratData(stratData, "strat_data")
+inOut.writeData(stratData, "strat_data")
 # # Либо
-# stratData = inOut.readStratData("strat_data")
+# stratData = inOut.readData("strat_data")
 # Aj, Bj, Aa, Ba = inOut.parseStratData(stratData)
 
 # Либо
-Fitness, FitIndxs, maxf_ind = gs.calcFitness(stratData)
+Fitness, FitIndxs, pqrsData, maxf_ind = gs.calcFitness(stratData)
 fitData = inOut.collectFitData(Fitness, FitIndxs)
-inOut.writeFitData(fitData, "fit_data")
+inOut.writeData(fitData, "fit_data")
+inOut.writeData(pqrsData, "pqrs_data")
 # # Либо
-# fitData = inOut.readFitData("fit_data")
+# fitData = inOut.readData("fit_data")
+# pqrsData = inOut.readData("pqrs_data")
 # Fitness, FitIndxs, maxf_ind = inOut.parseFitData(fitData)
 
 
@@ -66,34 +68,41 @@ inOut.writeSelection(selection, "sel_data")
 # selection = inOut.readSelection("sel_data")
 
 # Либо
-selection = gs.normSelection(selection)
+selection, maxM = gs.normSelection(selection)
 inOut.writeSelection(selection, "norm_sel_data")
 # # Либо
 # selection = inOut.readSelection("norm_sel_data")
 
 
-# # гистограммы нормированных макропараметров
+# # гистограммы нормированных разностей макропараметров
 # for i in range(1,9):
 #     gui.get_gistogram(np.transpose(selection)[i],"M"+str(i))
 
 
 print("запускаем машинное обучение")
-machineLam, intercept = ml.runSVM(selection)
+machLams, intercept = ml.runSVM(selection)
+# # по идее нормировка для восстановления функции фитнеса
+# for i in range(44):
+#     machLams[i] *= maxM[i]
+# # но результаты от нее намного хуже...
 
 print("считаем коэффициенты")
-coefData = tr.getCoefData1(fitData, machineLam)
-bstPntId = tr.findBestPoint(coefData)
+coefData = tr.getCoefData1(pqrsData, machLams)
+inOut.writeData(coefData, "coef_data")
+nearPntId = tr.findNearPoint(coefData)
 
 print("выводим результаты машинного обучения")
-calcLam = coefData.iloc[bstPntId+1].to_list()
-ml.drawSVM(selection, calcLam, machineLam, intercept, 0, 4)
-ml.showAllSVM(selection, calcLam, machineLam, intercept)
+calcLams = coefData.loc[maxf_ind].to_list()
+ml.drawSVM(selection, calcLams, machLams, intercept, 0, 4)
+ml.showAllSVM(selection, calcLams, machLams, intercept)
 
 print("\nПроверка производных:")
-tr.checkDerivatives(fitData, bstPntId)
-print("\nСравниваем коэффициенты:")
-tr.compareCoefs(coefData, bstPntId)
-print("\nСравниваем нормированные коэффициенты:")
-tr.compareNormCoefs(coefData, bstPntId)
+tr.checkDerivatives(fitData, pqrsData, maxf_ind, nearPntId)
 
+print("\nСравниваем коэффициенты:")
+tr.compareCoefs(coefData, nearPntId)
+print("\nСравниваем нормированные первым способом коэффициенты:")
+tr.compareNormCoefs1(coefData, nearPntId)
+print("\nСравниваем нормированные вторым способом коэффициенты:")
+tr.compareNormCoefs2(coefData, nearPntId, maxM)
 

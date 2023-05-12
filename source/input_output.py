@@ -1,10 +1,13 @@
 import pandas as pd
 import numpy as np
 
-def readStratData(fileName):
-    """Чтение данных стратегий из файла"""
-    stratData = pd.read_csv("csv/" + fileName + ".csv", index_col=0)
-    return stratData
+def readData(fileName):
+    pqrsData = pd.read_csv("csv/" + fileName + ".csv", index_col=0)
+    return pqrsData
+
+def writeData(pqrsData, fileName):
+    pqrsData.to_csv("csv/" + fileName + ".csv", index=True)
+
 
 def parseStratData(stratData):
     """
@@ -22,16 +25,6 @@ def collectStratData(A_j, B_j, A_a, B_a):
     stratData = pd.DataFrame({'Aj': A_j, 'Bj': B_j, 'Aa': A_a, 'Ba': B_a})
     return stratData
 
-def writeStratData(stratData, fileName):
-    """Запись данных cтратегий в файл"""
-    stratData.to_csv("csv/" + fileName + ".csv", index=True)
-
-
-
-def readFitData(fileName):
-    """Чтение данных фитнеса и макропараметров из файла"""
-    fitData = pd.read_csv("csv/" + fileName + ".csv", index_col=0)
-    return fitData
 
 def parseFitData(fitData):
     """
@@ -56,11 +49,6 @@ def collectFitData(Fitness, FitIndxs):
 
     fitData = pd.DataFrame(Fitness, columns=cols, index=FitIndxs)
     return fitData
-
-def writeFitData(fitData, fileName):
-    """Запись данных фитнеса и макропараметров в файл"""
-    fitData.to_csv("csv/" + fileName + ".csv", index=True)
-
 
 
 def writeSelection(selection, fileName):

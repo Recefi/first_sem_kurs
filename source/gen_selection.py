@@ -1,5 +1,6 @@
 import source.param as param
 import numpy as np
+import pandas as pd
 
 def genStrats(n):
     """Генерация стратегий"""
@@ -42,7 +43,7 @@ def calcFitness(stratData):
     Подсчет фитнеса и макропараметров
         Возвращает: Fitness, FitIndxs, maxf_ind
             FitIndxs[индекс Fitness] = исходный индекс
-                maxf_ind в исходных индексах, а не в индексах Fitness
+                pqrsData и maxf_ind в исходных индексах, а не в индексах Fitness
     """
     A_jun = stratData['Aj']
     B_jun = stratData['Bj']
@@ -54,6 +55,7 @@ def calcFitness(stratData):
     k = 0
     Fitness = []
     FitIndxs = []
+    pqrs = []
     for i in A_jun.index:  # используем исходные индексы
         res = []
 
@@ -92,11 +94,14 @@ def calcFitness(stratData):
                     res.append(res[m+1]*res[j+1])
             Fitness.append(res)
             FitIndxs.append(i)
+            pqrs.append([p, q, r, s])
     
     print("maxf:",maxf)
     print("maxf_ind",maxf_ind)
     print(k)
-    return Fitness, FitIndxs, maxf_ind
+
+    pqrsData = pd.DataFrame(pqrs, columns=["p", "q", "r", "s"], index=FitIndxs)
+    return Fitness, FitIndxs, pqrsData, maxf_ind
 
 def calcSelection(Fitness):
     """Подсчет итоговой выборки"""
@@ -129,8 +134,10 @@ def calcSelection(Fitness):
 def normSelection(selection):
     """Нормирование итоговой выборки"""
     selection = np.array(selection)
+    maxM = []
     for i in range(len(selection[0])):
         max = np.max(np.abs(selection[:,i]))
         selection[:,i]/=max
-    return selection
+        maxM.append(max)
+    return selection, maxM
 
