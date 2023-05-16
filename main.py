@@ -7,7 +7,7 @@ import source.machine_learning as ml
 import source.test_result as tr
 
 # Либо
-Aj, Bj, Aa, Ba = gs.genStrats(200)
+Aj, Bj, Aa, Ba = gs.genStrats(100)
 stratData = inOut.collectStratData(Aj, Bj, Aa, Ba)
 inOut.writeData(stratData, "strat_data")
 # # Либо
@@ -15,21 +15,21 @@ inOut.writeData(stratData, "strat_data")
 # Aj, Bj, Aa, Ba = inOut.parseStratData(stratData)
 
 # Либо
-Fitness, FitIndxs, pqrsData, maxf_ind = gs.calcFitness(stratData)
+Fitness, FitIndxs, pqrsData, maxFitId = gs.calcFitness(stratData)
 fitData = inOut.collectFitData(Fitness, FitIndxs)
 inOut.writeData(fitData, "fit_data")
 inOut.writeData(pqrsData, "pqrs_data")
 # # Либо
 # fitData = inOut.readData("fit_data")
 # pqrsData = inOut.readData("pqrs_data")
-# Fitness, FitIndxs, maxf_ind = inOut.parseFitData(fitData)
+# Fitness, FitIndxs, maxFitId = inOut.parseFitData(fitData)
 
 
 
 # # все синусоиды до удаления стратегий
 # gui.get_all_sinss(stratData.loc[FitIndxs])
 # # оптимальные синусоиды до удаления стратегий
-# gui.get_sinss(Aj[maxf_ind], Bj[maxf_ind], Aa[maxf_ind], Ba[maxf_ind])
+# gui.get_sinss(Aj[maxFitId], Bj[maxFitId], Aa[maxFitId], Ba[maxFitId])
 
 # # матрица корреляции до удаления стратегий
 # gui.get_correllation(np.transpose(Fitness)[1:9:1],["M1","M2","M3","M4","M5","M6","M7","M8"])
@@ -47,18 +47,27 @@ inOut.writeData(pqrsData, "pqrs_data")
 # # сохраняем новую fitData в файл
 # inOut.writeFitData(fitData, "fit_data_2")
 # # обновляем переменные на основе новой fitData
-# Fitness, FitIndxs, maxf_ind = inOut.parseFitData(fitData)
+# Fitness, FitIndxs, maxFitId = inOut.parseFitData(fitData)
 
 # матрица корреляции после удаления стратегий
 gui.get_correllation(np.transpose(Fitness)[1:9:1],["M1","M2","M3","M4","M5","M6","M7","M8"])
 
 # оптимальные синусоиды после удаления стратегий
-gui.get_sinss(Aj[maxf_ind], Bj[maxf_ind], Aa[maxf_ind], Ba[maxf_ind])
+gui.get_sinss(Aj[maxFitId], Bj[maxFitId], Aa[maxFitId], Ba[maxFitId])
 # # все синусоиды после удаления стратегий
 # gui.get_all_sinss(stratData.loc[FitIndxs])
 
 plt.show()
 
+
+# delIndxs = fitData[fitData['fit'] < 0].index
+# fitData = fitData.drop(delIndxs)
+# pqrsData = pqrsData.drop(delIndxs)
+# inOut.writeData(fitData, "fit_data")
+# inOut.writeData(pqrsData, "pqrs_data")
+
+# fitData['fit'] += 50
+# inOut.writeData(fitData, "fit_data")
 
 
 # Либо
@@ -80,29 +89,25 @@ inOut.writeSelection(selection, "norm_sel_data")
 
 
 print("запускаем машинное обучение")
-machLams, intercept = ml.runSVM(selection)
-# # по идее нормировка для восстановления функции фитнеса
-# for i in range(44):
-#     machLams[i] *= maxM[i]
-# # но результаты от нее намного хуже...
+machCoef, intercept = ml.runSVM(selection)
+#print(machCoef)
 
-print("считаем коэффициенты")
-coefData = tr.getCoefData1(pqrsData, machLams)
+coefData = tr.getCoefData_1(pqrsData, machCoef)
 inOut.writeData(coefData, "coef_data")
-nearPntId = tr.findNearPoint(coefData)
 
 print("выводим результаты машинного обучения")
-calcLams = coefData.loc[maxf_ind].to_list()
-ml.drawSVM(selection, calcLams, machLams, intercept, 0, 4)
-ml.showAllSVM(selection, calcLams, machLams, intercept)
+calcCoef = coefData.loc[maxFitId].to_list()
+ml.drawSVM(selection, calcCoef, machCoef, intercept, 0, 4)
+ml.showAllSVM(selection, calcCoef, machCoef, intercept)
 
-print("\nПроверка производных:")
-tr.checkDerivatives(fitData, pqrsData, maxf_ind, nearPntId)
+print("\nПроверка коэффициентов:")
+nearPntId = tr.findNearPoint(coefData)
+checkCalcCoefData = tr.checkCalcCoef(fitData, pqrsData, maxFitId, nearPntId)
+inOut.writeData(checkCalcCoefData, "check_calcCoef_data")
+print(checkCalcCoefData)
 
-print("\nСравниваем коэффициенты:")
+print("\nСравниваем самые близкие коэффициенты:")
 tr.compareCoefs(coefData, nearPntId)
-print("\nСравниваем нормированные первым способом коэффициенты:")
-tr.compareNormCoefs1(coefData, nearPntId)
-print("\nСравниваем нормированные вторым способом коэффициенты:")
-tr.compareNormCoefs2(coefData, nearPntId, maxM)
+print("\nСравниваем нормированные самые близкие коэффициенты:")
+tr.compareNormCoefs(coefData, nearPntId)
 

@@ -18,22 +18,21 @@ def runSVM(selection):
 
     X_train, X_test, Y_train, Y_test=train_test_split(X, Y, test_size=0.20)
     # Основная часть
-    clf = svm.SVC(kernel="linear")  # при C=1(по умолчанию) результаты почему-то лучше, чем при C=1000...
+    clf = svm.SVC(gamma='auto', kernel="linear", C=1000)
     clf.fit(X_train, Y_train)
-    print(len(X_train))
 
     # Предсказание класса для X_test
     predictions = clf.predict(X_test)
     print('Точность классификатора:')
     print('     SVM: ', accuracy_score(predictions, Y_test)*100)
 
-    lambdas = clf.coef_[0].tolist()
+    lambdas = clf.coef_[0]#.tolist()
     intercept = clf.intercept_[0]
 
     return lambdas, intercept
 
 
-def drawSVM(selection, calcLam, machineLam, intercept, i, j):
+def drawSVM(selection, calcCoef, machCoef, intercept, i, j):
     X = selection[:,1:]
     Y = selection[:,0]
     
@@ -44,16 +43,16 @@ def drawSVM(selection, calcLam, machineLam, intercept, i, j):
     ax.scatter(X[:, i], X[:, j], c=Y, s=1, cmap=plt.cm.Paired)
 
     x_visual = np.linspace(-1,1)
-    y_visual = -(calcLam[i] / calcLam[j]) * x_visual # - intercept / calcLam[j]
+    y_visual = -(calcCoef[i] / calcCoef[j]) * x_visual # - intercept / calcCoef[j]  # хз как подсчитать intercept для вычисляемых коэф-тов...
     ax.plot(x_visual, y_visual, color="red", label="Calc")
-    y_visual = -(machineLam[i] / machineLam[j]) * x_visual - intercept / machineLam[j]
+    y_visual = -(machCoef[i] / machCoef[j]) * x_visual - intercept / machCoef[j]
     ax.plot(x_visual, y_visual, color="blue", label="SVM")
     ax.legend()
 
     plt.draw()
 
 
-def showAllSVM(selection, calcLam, machineLam, intercept):
+def showAllSVM(selection, calcCoef, machCoef, intercept):
     X = selection[:,1:]
     Y = selection[:,0]
 
@@ -66,9 +65,9 @@ def showAllSVM(selection, calcLam, machineLam, intercept):
                 # ax[i][j].set_ylabel('M'+str(j+1))
                 ax[i][j].scatter(X[:, i], X[:, j], c=Y, s=1, cmap=plt.cm.Paired)
                 x_visual = np.linspace(-1, 1)
-                y_visual = -(calcLam[i] / calcLam[j]) * x_visual # - intercept / calcLam[j]
+                y_visual = -(calcCoef[i] / calcCoef[j]) * x_visual # - intercept / calcCoef[j]
                 ax[i][j].plot(x_visual, y_visual, color="red")
-                y_visual = -(machineLam[i] / machineLam[j]) * x_visual - intercept / machineLam[j]
+                y_visual = -(machCoef[i] / machCoef[j]) * x_visual - intercept / machCoef[j]
                 ax[i][j].plot(x_visual, y_visual, color="blue")
 
     plt.show()

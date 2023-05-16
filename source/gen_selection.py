@@ -96,9 +96,9 @@ def calcFitness(stratData):
             FitIndxs.append(i)
             pqrs.append([p, q, r, s])
     
-    print("maxf:",maxf)
-    print("maxf_ind",maxf_ind)
-    print(k)
+    print("init_maxf:",maxf)
+    print("init_maxf_ind:",maxf_ind)
+    print("strats:",k)
 
     pqrsData = pd.DataFrame(pqrs, columns=["p", "q", "r", "s"], index=FitIndxs)
     return Fitness, FitIndxs, pqrsData, maxf_ind
