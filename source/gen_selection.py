@@ -131,13 +131,13 @@ def calcSelection(Fitness):
             selection.append(res)
     return selection
 
-def normSelection(selection):
-    """Нормирование итоговой выборки"""
-    selection = np.array(selection)
-    maxM = []
-    for i in range(len(selection[0])):
-        max = np.max(np.abs(selection[:,i]))
-        selection[:,i]/=max
-        maxM.append(max)
-    return selection, maxM
+def normArray(array):
+    """Нормирование по макс. значению в столбце начиная со 2-го столбца"""
+    array = np.array(array)
+    maxCols = []
+    for i in range(1, len(array[0])):
+        max = np.max(np.abs(array[:,i]))
+        array[:,i]/=max
+        maxCols.append(max)
+    return array, maxCols
 

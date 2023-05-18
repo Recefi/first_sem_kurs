@@ -1,7 +1,6 @@
 import matplotlib.pyplot as plt
 import source.gen_selection as gs
 import numpy as np
-import source.function as fn
 from sklearn import svm
 from sklearn import preprocessing
 from sklearn.datasets import make_blobs
@@ -16,15 +15,17 @@ def runSVM(selection):
     Y = selection[:,0]
     #print(Y)
 
-    X_train, X_test, Y_train, Y_test=train_test_split(X, Y, test_size=0.20)
+    print(len(X))
+
+    X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.20)
     # Основная часть
-    clf = svm.SVC(gamma='auto', kernel="linear", C=1000)
+    clf = svm.SVC(kernel="linear", C=1000)
     clf.fit(X_train, Y_train)
 
     # Предсказание класса для X_test
     predictions = clf.predict(X_test)
     print('Точность классификатора:')
-    print('     SVM: ', accuracy_score(predictions, Y_test)*100)
+    print('     SVM: ', accuracy_score(Y_test, predictions)*100)
 
     lambdas = clf.coef_[0]#.tolist()
     intercept = clf.intercept_[0]
@@ -32,7 +33,7 @@ def runSVM(selection):
     return lambdas, intercept
 
 
-def drawSVM(selection, calcCoef, machCoef, intercept, i, j):
+def drawSVM(selection, norm_machCoefs, norm_calcCoefs_mf, norm_calcCoefs_n, intercept, i, j):
     X = selection[:,1:]
     Y = selection[:,0]
     
@@ -40,19 +41,21 @@ def drawSVM(selection, calcCoef, machCoef, intercept, i, j):
     ax.set(ylim=(-1, 1))
     ax.set_xlabel('M'+str(i+1))
     ax.set_ylabel('M'+str(j+1))
-    ax.scatter(X[:, i], X[:, j], c=Y, s=1, cmap=plt.cm.Paired)
+    ax.scatter(X[:, i], X[:, j], c=Y, s=5, cmap=plt.cm.Paired)
 
     x_visual = np.linspace(-1,1)
-    y_visual = -(calcCoef[i] / calcCoef[j]) * x_visual # - intercept / calcCoef[j]  # хз как подсчитать intercept для вычисляемых коэф-тов...
-    ax.plot(x_visual, y_visual, color="red", label="Calc")
-    y_visual = -(machCoef[i] / machCoef[j]) * x_visual - intercept / machCoef[j]
+    y_visual = -(norm_calcCoefs_mf[i] / norm_calcCoefs_mf[j]) * x_visual # - intercept / norm_calcCoefs[j]  # хз как подсчитать intercept для вычисляемых коэф-тов... мб использовать пропущенные слагаемые из полной формулы фитнеса...
+    ax.plot(x_visual, y_visual, color="red", label="Taylor_maxFitPnt")
+    y_visual = -(norm_calcCoefs_n[i] / norm_calcCoefs_n[j]) * x_visual # - intercept / norm_calcCoefs[j]
+    ax.plot(x_visual, y_visual, color="green", label="Taylor_nearPnt")
+    y_visual = -(norm_machCoefs[i] / norm_machCoefs[j]) * x_visual - intercept / norm_machCoefs[j]
     ax.plot(x_visual, y_visual, color="blue", label="SVM")
     ax.legend()
 
     plt.draw()
 
 
-def showAllSVM(selection, calcCoef, machCoef, intercept):
+def showAllSVM(selection, norm_machCoefs, norm_calcCoefs_mf, norm_calcCoefs_n, intercept):
     X = selection[:,1:]
     Y = selection[:,0]
 
@@ -63,11 +66,13 @@ def showAllSVM(selection, calcCoef, machCoef, intercept):
                 ax[i][j].set(ylim=(-1, 1))
                 # ax[i][j].set_xlabel('M'+str(i+1))
                 # ax[i][j].set_ylabel('M'+str(j+1))
-                ax[i][j].scatter(X[:, i], X[:, j], c=Y, s=1, cmap=plt.cm.Paired)
+                ax[i][j].scatter(X[:, i], X[:, j], c=Y, s=5, cmap=plt.cm.Paired)
                 x_visual = np.linspace(-1, 1)
-                y_visual = -(calcCoef[i] / calcCoef[j]) * x_visual # - intercept / calcCoef[j]
+                y_visual = -(norm_calcCoefs_mf[i] / norm_calcCoefs_mf[j]) * x_visual # - intercept / norm_calcCoefs[j]
                 ax[i][j].plot(x_visual, y_visual, color="red")
-                y_visual = -(machCoef[i] / machCoef[j]) * x_visual - intercept / machCoef[j]
+                y_visual = -(norm_calcCoefs_n[i] / norm_calcCoefs_n[j]) * x_visual # - intercept / norm_calcCoefs[j]
+                ax[i][j].plot(x_visual, y_visual, color="green")
+                y_visual = -(norm_machCoefs[i] / norm_machCoefs[j]) * x_visual - intercept / norm_machCoefs[j]
                 ax[i][j].plot(x_visual, y_visual, color="blue")
 
     plt.show()

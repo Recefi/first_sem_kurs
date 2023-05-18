@@ -1,18 +1,19 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import pandas as pd
 import source.gen_selection as gs
 import source.graphical_interface as gui
 import source.input_output as inOut
 import source.machine_learning as ml
 import source.test_result as tr
 
-# Либо
-Aj, Bj, Aa, Ba = gs.genStrats(100)
-stratData = inOut.collectStratData(Aj, Bj, Aa, Ba)
-inOut.writeData(stratData, "strat_data")
 # # Либо
-# stratData = inOut.readData("strat_data")
-# Aj, Bj, Aa, Ba = inOut.parseStratData(stratData)
+# Aj, Bj, Aa, Ba = gs.genStrats(50)
+# stratData = inOut.collectStratData(Aj, Bj, Aa, Ba)
+# inOut.writeData(stratData, "strat_data")
+# Либо
+stratData = inOut.readData("strat_data")
+Aj, Bj, Aa, Ba = inOut.parseStratData(stratData)
 
 # Либо
 Fitness, FitIndxs, pqrsData, maxFitId = gs.calcFitness(stratData)
@@ -59,16 +60,9 @@ gui.get_sinss(Aj[maxFitId], Bj[maxFitId], Aa[maxFitId], Ba[maxFitId])
 
 plt.show()
 
-
-# delIndxs = fitData[fitData['fit'] < 0].index
-# fitData = fitData.drop(delIndxs)
-# pqrsData = pqrsData.drop(delIndxs)
-# inOut.writeData(fitData, "fit_data")
-# inOut.writeData(pqrsData, "pqrs_data")
-
-# fitData['fit'] += 50
-# inOut.writeData(fitData, "fit_data")
-
+Fitness, maxMparams = gs.normArray(Fitness)
+normFitData = inOut.collectFitData(Fitness, FitIndxs)
+inOut.writeData(normFitData, "norm_fit_data")
 
 # Либо
 selection = gs.calcSelection(Fitness)
@@ -76,12 +70,22 @@ inOut.writeSelection(selection, "sel_data")
 # # Либо
 # selection = inOut.readSelection("sel_data")
 
-# Либо
-selection, maxM = gs.normSelection(selection)
-inOut.writeSelection(selection, "norm_sel_data")
+selection = np.array(selection)
+
+# # Либо
+# selection, maxMparams = gs.normArray(selection)
+# inOut.writeSelection(selection, "norm_sel_data")
 # # Либо
 # selection = inOut.readSelection("norm_sel_data")
 
+# # # normMaxMparams = maxMparams / np.abs(maxMparams[0])
+# # # maxMparamsData = pd.DataFrame({'maxMparams_normDiff': maxMparams, 'normMaxMparams_normDiff': normMaxMparams})
+# # # inOut.writeData(maxMparamsData, "max_Mparams_data_normDiff")
+
+# # # # data111 = inOut.readData("max_Mparams_data_normDiff")
+# # # # data222 = inOut.readData("max_Mparams_data_normTrue")
+# # # # data333 = pd.concat([data111, data222], axis = 1)
+# # # # inOut.writeData(data333, "max_Mparams_data")
 
 # # гистограммы нормированных разностей макропараметров
 # for i in range(1,9):
@@ -89,25 +93,50 @@ inOut.writeSelection(selection, "norm_sel_data")
 
 
 print("запускаем машинное обучение")
-machCoef, intercept = ml.runSVM(selection)
-#print(machCoef)
+norm_machCoefs, intercept = ml.runSVM(selection)
+# машинное обучение возвращает "нормированные" лямбда для нормированных макропараметров
+# "разнормируем" машинные коэф-ты:
+machCoefs = []
+for i in range(44):
+    machCoefs.append(norm_machCoefs[i]/maxMparams[i])
 
-coefData = tr.getCoefData_1(pqrsData, machCoef)
+coefData = tr.getCoefData_2(pqrsData, norm_machCoefs, machCoefs)
 inOut.writeData(coefData, "coef_data")
+cosines = tr.getCosinesCoef(coefData)
+nearPntId = cosines.idxmax()
 
-print("выводим результаты машинного обучения")
-calcCoef = coefData.loc[maxFitId].to_list()
-ml.drawSVM(selection, calcCoef, machCoef, intercept, 0, 4)
-ml.showAllSVM(selection, calcCoef, machCoef, intercept)
+print("nearPntId =", nearPntId, ", cos(TaylorCoef^machineCoef):", cosines[nearPntId])
+print("maxFitPntId =", maxFitId, ", cos(TaylorCoef^machineCoef):", cosines[maxFitId])
 
-print("\nПроверка коэффициентов:")
-nearPntId = tr.findNearPoint(coefData)
-checkCalcCoefData = tr.checkCalcCoef(fitData, pqrsData, maxFitId, nearPntId)
-inOut.writeData(checkCalcCoefData, "check_calcCoef_data")
-print(checkCalcCoefData)
+print("\nвыводим результаты машинного обучения\n")
+calcCoefs_mf = coefData.loc[maxFitId]
+norm_calcCoefs_mf = calcCoefs_mf * maxMparams
+calcCoefs_n = coefData.loc[nearPntId]
+norm_calcCoefs_n = calcCoefs_n * maxMparams
+ml.drawSVM(selection, norm_machCoefs, norm_calcCoefs_mf, norm_calcCoefs_n, intercept, 0, 4)
+ml.showAllSVM(selection, norm_machCoefs, norm_calcCoefs_mf, norm_calcCoefs_n, intercept)
 
-print("\nСравниваем самые близкие коэффициенты:")
-tr.compareCoefs(coefData, nearPntId)
-print("\nСравниваем нормированные самые близкие коэффициенты:")
-tr.compareNormCoefs(coefData, nearPntId)
+print("\nСравенение способов восстановления функции фитнеса:\n")
 
+checkCoefData = tr.checkCoef(coefData, fitData, pqrsData, maxFitId, nearPntId)
+inOut.writeData(checkCoefData, "check_coef_data")
+print(checkCoefData)
+
+for i in checkCoefData.columns:
+    checkCoefData.loc[:,i] /= np.abs(checkCoefData.loc[checkCoefData.index[0],i])
+inOut.writeData(checkCoefData, "norm_check_coef_data")
+print(checkCoefData)
+
+fitCosines = tr.getFitCosines(checkCoefData).tolist()
+fitCosinesData = pd.DataFrame(columns=checkCoefData.columns)
+fitCosinesData.loc[0] = fitCosines
+fitCosinesData.index = ["cos: "]
+print(fitCosinesData)
+
+print("\nСравниваем коэффициенты:")
+tr.compareCoefs(coefData, nearPntId, maxFitId)
+
+restr_maxFitId = checkCoefData[['restoredFit']].idxmax(axis='index')[0]
+print("restore_maxFitId", restr_maxFitId)
+gui.get_sinss(Aj[restr_maxFitId], Bj[restr_maxFitId], Aa[restr_maxFitId], Ba[restr_maxFitId])
+plt.show()
