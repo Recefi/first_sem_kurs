@@ -76,7 +76,7 @@ def parseNormFitData(fitData):
     FitIndxs = fitData.index[1:]
     # Получаем индекс макс.значения фитнеса с учетом редактирования файла
     maxf_ind = fitData[['fit']].idxmax(axis='index')[0]
-    maxMparams = fitData.loc[-1].to_numpy()
+    maxMparams = fitData.loc[-1, 'M1':'M8M8'].to_numpy()
     return Fitness, FitIndxs, maxf_ind, maxMparams
 
 
