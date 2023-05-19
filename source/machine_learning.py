@@ -1,13 +1,8 @@
 import matplotlib.pyplot as plt
-import source.gen_selection as gs
 import numpy as np
 from sklearn import svm
-from sklearn import preprocessing
-from sklearn.datasets import make_blobs
-from sklearn.inspection import DecisionBoundaryDisplay
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
-from sklearn import model_selection
 
 def runSVM(selection):
     X = selection[:,1:]

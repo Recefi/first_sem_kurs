@@ -26,7 +26,6 @@ inOut.writeData(pqrsData, "pqrs_data")
 # Fitness, FitIndxs, maxFitId = inOut.parseFitData(fitData)
 
 
-
 # # все синусоиды до удаления стратегий
 # gui.get_all_sinss(stratData.loc[FitIndxs])
 # # оптимальные синусоиды до удаления стратегий
@@ -60,9 +59,14 @@ gui.get_sinss(Aj[maxFitId], Bj[maxFitId], Aa[maxFitId], Ba[maxFitId])
 
 plt.show()
 
-Fitness, maxMparams = gs.normArray(Fitness)
-normFitData = inOut.collectFitData(Fitness, FitIndxs)
+
+# Либо
+Fitness, maxMparams = gs.normMparams(Fitness)
+normFitData = inOut.collectNormFitData(Fitness, FitIndxs, maxMparams)
 inOut.writeData(normFitData, "norm_fit_data")
+# # Либо
+# normFitData = inOut.readData("norm_fit_data")
+# Fitness, FitIndxs, maxFitId, maxMparams = inOut.parseNormFitData(normFitData)
 
 # Либо
 selection = gs.calcSelection(Fitness)
@@ -70,29 +74,14 @@ inOut.writeSelection(selection, "sel_data")
 # # Либо
 # selection = inOut.readSelection("sel_data")
 
-selection = np.array(selection)
 
-# # Либо
-# selection, maxMparams = gs.normArray(selection)
-# inOut.writeSelection(selection, "norm_sel_data")
-# # Либо
-# selection = inOut.readSelection("norm_sel_data")
-
-# # # normMaxMparams = maxMparams / np.abs(maxMparams[0])
-# # # maxMparamsData = pd.DataFrame({'maxMparams_normDiff': maxMparams, 'normMaxMparams_normDiff': normMaxMparams})
-# # # inOut.writeData(maxMparamsData, "max_Mparams_data_normDiff")
-
-# # # # data111 = inOut.readData("max_Mparams_data_normDiff")
-# # # # data222 = inOut.readData("max_Mparams_data_normTrue")
-# # # # data333 = pd.concat([data111, data222], axis = 1)
-# # # # inOut.writeData(data333, "max_Mparams_data")
-
-# # гистограммы нормированных разностей макропараметров
+# # гистограммы разностей нормированных макропараметров
 # for i in range(1,9):
 #     gui.get_gistogram(np.transpose(selection)[i],"M"+str(i))
 
 
 print("запускаем машинное обучение")
+selection = np.array(selection)
 norm_machCoefs, intercept = ml.runSVM(selection)
 # машинное обучение возвращает "нормированные" лямбда для нормированных макропараметров
 # "разнормируем" машинные коэф-ты:
@@ -104,9 +93,6 @@ coefData = tr.getCoefData_2(pqrsData, norm_machCoefs, machCoefs)
 inOut.writeData(coefData, "coef_data")
 cosines = tr.getCosinesCoef(coefData)
 nearPntId = cosines.idxmax()
-
-print("nearPntId =", nearPntId, ", cos(TaylorCoef^machineCoef):", cosines[nearPntId])
-print("maxFitPntId =", maxFitId, ", cos(TaylorCoef^machineCoef):", cosines[maxFitId])
 
 print("\nвыводим результаты машинного обучения\n")
 calcCoefs_mf = coefData.loc[maxFitId]
@@ -122,10 +108,11 @@ checkCoefData = tr.checkCoef(coefData, fitData, pqrsData, maxFitId, nearPntId)
 inOut.writeData(checkCoefData, "check_coef_data")
 print(checkCoefData)
 
-for i in checkCoefData.columns:
-    checkCoefData.loc[:,i] /= np.abs(checkCoefData.loc[checkCoefData.index[0],i])
-inOut.writeData(checkCoefData, "norm_check_coef_data")
-print(checkCoefData)
+normCheckCoefData = checkCoefData.copy()
+for i in normCheckCoefData.columns:
+    normCheckCoefData.loc[:,i] /= np.abs(normCheckCoefData.loc[normCheckCoefData.index[0],i])
+inOut.writeData(normCheckCoefData, "norm_check_coef_data")
+print(normCheckCoefData)
 
 fitCosines = tr.getFitCosines(checkCoefData).tolist()
 fitCosinesData = pd.DataFrame(columns=checkCoefData.columns)
@@ -133,10 +120,24 @@ fitCosinesData.loc[0] = fitCosines
 fitCosinesData.index = ["cos: "]
 print(fitCosinesData)
 
-print("\nСравниваем коэффициенты:")
-tr.compareCoefs(coefData, nearPntId, maxFitId)
-
 restr_maxFitId = checkCoefData[['restoredFit']].idxmax(axis='index')[0]
-print("restore_maxFitId", restr_maxFitId)
-gui.get_sinss(Aj[restr_maxFitId], Bj[restr_maxFitId], Aa[restr_maxFitId], Ba[restr_maxFitId])
-plt.show()
+print("\nrestore_maxFitId", restr_maxFitId)
+# gui.get_sinss(Aj[restr_maxFitId], Bj[restr_maxFitId], Aa[restr_maxFitId], Ba[restr_maxFitId])
+# plt.show()
+
+
+print("\n")
+print("nearPntId =", nearPntId, ", cos:", cosines[nearPntId])
+print("maxFitPntId =", maxFitId, ", cos:", cosines[maxFitId])
+
+print("\nСравниваем коэффициенты:")
+compareCoefData = tr.compareCoefs(coefData, nearPntId, maxFitId)
+inOut.writeData(compareCoefData, "compare_coef_data")
+print(compareCoefData)
+
+
+stratFitData = inOut.collectStratFitData(stratData, checkCoefData)
+inOut.writeData(stratFitData, "strat_fit_data")
+fitDataByAbsVals = inOut.collectFitDataByAbsVals(checkCoefData)
+inOut.writeData(fitDataByAbsVals, "fit_data_byAbsVals")
+

@@ -224,10 +224,14 @@ def compareCoefs(coefData, nearPntId, maxFitId):
     calcCoefs_nearPnt = coefData.loc[nearPntId].copy()
     calcCoefs_maxFitPnt = coefData.loc[maxFitId].copy()
     
-    machCoefs/=(np.max(np.abs(machCoefs)))
-    calcCoefs_nearPnt/=(np.max(np.abs(calcCoefs_nearPnt)))
-    calcCoefs_maxFitPnt/=(np.max(np.abs(calcCoefs_maxFitPnt)))
+    # machCoefs/=(np.max(np.abs(machCoefs)))
+    # calcCoefs_nearPnt/=(np.max(np.abs(calcCoefs_nearPnt)))
+    # calcCoefs_maxFitPnt/=(np.max(np.abs(calcCoefs_maxFitPnt)))
+
+    machCoefs/=(np.abs(machCoefs[0]))
+    calcCoefs_nearPnt/=(np.abs(calcCoefs_nearPnt[0]))
+    calcCoefs_maxFitPnt/=(np.abs(calcCoefs_maxFitPnt[0]))   
 
     compareCoefData = pd.DataFrame({'machine': machCoefs, 'nearPnt': calcCoefs_nearPnt, 'maxFitPnt': calcCoefs_maxFitPnt}, index=coefData.columns)
-    print(compareCoefData)
+    return compareCoefData
 
