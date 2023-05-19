@@ -27,22 +27,22 @@ inOut.writeData(pqrsData, "pqrs_data")
 
 
 # # все синусоиды до удаления стратегий
-# gui.get_all_sinss(stratData.loc[FitIndxs])
+# gui.draw_all_sinss(stratData.loc[FitIndxs])
 # # оптимальные синусоиды до удаления стратегий
-# gui.get_sinss(Aj[maxFitId], Bj[maxFitId], Aa[maxFitId], Ba[maxFitId])
+# gui.draw_sinss(Aj[maxFitId], Bj[maxFitId], Aa[maxFitId], Ba[maxFitId])
 
 # # матрица корреляции до удаления стратегий
-# gui.get_correllation(np.transpose(Fitness)[1:9:1],["M1","M2","M3","M4","M5","M6","M7","M8"])
+# gui.draw_correllation(np.transpose(Fitness)[1:9:1],["M1","M2","M3","M4","M5","M6","M7","M8"])
 
-# #a, b, xlim78, ylim78 = gui.get_regLine(fitData['M7'], fitData['M8'])
+# #a, b, xlim78, ylim78 = gui.draw_regLine(fitData['M7'], fitData['M8'])
 
 # # исправление корреляции между M1 и M2 удалением стратегий
 # fitData = gui.fixCorr(fitData, 'M1', 'M2', 10)
 # # исправление корреляции между M5 и M6 удалением стратегий
 # fitData = gui.fixCorr(fitData, 'M5', 'M6', 10)
 
-# #gui.get_limRegLine(fitData['M7'], fitData['M8'], xlim78, ylim78)
-# #gui.get_limRegLine(fitData['M1'], fitData['M2'], [0, 140], [-140, 0])
+# #gui.draw_limRegLine(fitData['M7'], fitData['M8'], xlim78, ylim78)
+# #gui.draw_limRegLine(fitData['M1'], fitData['M2'], [0, 140], [-140, 0])
 
 # # сохраняем новую fitData в файл
 # inOut.writeFitData(fitData, "fit_data_2")
@@ -50,12 +50,12 @@ inOut.writeData(pqrsData, "pqrs_data")
 # Fitness, FitIndxs, maxFitId = inOut.parseFitData(fitData)
 
 # матрица корреляции после удаления стратегий
-gui.get_correllation(np.transpose(Fitness)[1:9:1],["M1","M2","M3","M4","M5","M6","M7","M8"])
+gui.draw_correllation(np.transpose(Fitness)[1:9:1],["M1","M2","M3","M4","M5","M6","M7","M8"])
 
 # оптимальные синусоиды после удаления стратегий
-gui.get_sinss(Aj[maxFitId], Bj[maxFitId], Aa[maxFitId], Ba[maxFitId])
+gui.draw_sinss(Aj[maxFitId], Bj[maxFitId], Aa[maxFitId], Ba[maxFitId])
 # # все синусоиды после удаления стратегий
-# gui.get_all_sinss(stratData.loc[FitIndxs])
+# gui.draw_all_sinss(stratData.loc[FitIndxs])
 
 plt.show()
 
@@ -77,7 +77,7 @@ inOut.writeSelection(selection, "sel_data")
 
 # # гистограммы разностей нормированных макропараметров
 # for i in range(1,9):
-#     gui.get_gistogram(np.transpose(selection)[i],"M"+str(i))
+#     gui.show_gistogram(np.transpose(selection)[i],"M"+str(i))
 
 
 print("запускаем машинное обучение")
@@ -100,6 +100,10 @@ norm_calcCoefs_mf = calcCoefs_mf * maxMparams
 calcCoefs_n = coefData.loc[nearPntId]
 norm_calcCoefs_n = calcCoefs_n * maxMparams
 ml.drawSVM(selection, norm_machCoefs, norm_calcCoefs_mf, norm_calcCoefs_n, intercept, 0, 4)
+ml.drawSVM(selection, norm_machCoefs, norm_calcCoefs_mf, norm_calcCoefs_n, intercept, 0, 1)
+ml.drawSVM(selection, norm_machCoefs, norm_calcCoefs_mf, norm_calcCoefs_n, intercept, 4, 5)
+ml.drawSVM(selection, norm_machCoefs, norm_calcCoefs_mf, norm_calcCoefs_n, intercept, 0, 3)
+ml.drawSVM(selection, norm_machCoefs, norm_calcCoefs_mf, norm_calcCoefs_n, intercept, 4, 7)
 ml.showAllSVM(selection, norm_machCoefs, norm_calcCoefs_mf, norm_calcCoefs_n, intercept)
 
 print("\nСравенение способов восстановления функции фитнеса:\n")
@@ -121,8 +125,8 @@ fitCosinesData.index = ["cos: "]
 print(fitCosinesData)
 
 restr_maxFitId = checkCoefData[['restoredFit']].idxmax(axis='index')[0]
-print("\nrestore_maxFitId", restr_maxFitId)
-# gui.get_sinss(Aj[restr_maxFitId], Bj[restr_maxFitId], Aa[restr_maxFitId], Ba[restr_maxFitId])
+print("\nrestore_maxFitId =", restr_maxFitId)
+# gui.draw_sinss(Aj[restr_maxFitId], Bj[restr_maxFitId], Aa[restr_maxFitId], Ba[restr_maxFitId])
 # plt.show()
 
 

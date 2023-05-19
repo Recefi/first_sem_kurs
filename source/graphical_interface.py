@@ -4,7 +4,7 @@ from scipy import stats
 import source.input_output as inOut
 
 
-def get_sinss(Aj, Bj, Aa, Ba):
+def draw_sinss(Aj, Bj, Aa, Ba):
     fig, ax = plt.subplots()
 
     xj = np.linspace(0, 1)
@@ -18,7 +18,7 @@ def get_sinss(Aj, Bj, Aa, Ba):
     #plt.ylim([-140, 0])
     plt.draw()
 
-def get_all_sinss(stratData):
+def draw_all_sinss(stratData):
     fig, ax = plt.subplots()
     Aj, Bj, Aa, Ba = inOut.parseStratData(stratData)
 
@@ -34,7 +34,27 @@ def get_all_sinss(stratData):
     #plt.ylim([-140, 0])
     plt.draw()
 
-def get_gistogram(array, tittle):
+def show_comparison_sinss(stratData, maxTrueFitId, maxRestrFitId):
+    fig, ax = plt.subplots()
+    trueOptStrat = stratData.loc[maxTrueFitId]
+    restrOptStrat = stratData.loc[maxRestrFitId]
+
+    xj = np.linspace(0, 1)
+    yj = trueOptStrat['Aj'] + trueOptStrat['Bj'] * np.cos(2 * np.pi * xj)
+    ax.plot(xj, yj, c="blue", label="Молодые (по исх. функции)")
+    xa = np.linspace(0, 1)
+    ya = trueOptStrat['Aa'] + trueOptStrat['Ba'] * np.cos(2 * np.pi * xa)
+    ax.plot(xa, ya, c="red", label="Взрослые (по исх. функции)")
+
+    yj = restrOptStrat['Aj'] + restrOptStrat['Bj'] * np.cos(2 * np.pi * xj)
+    ax.plot(xj, yj, c="green", label="Молодые (по восст. функции)")
+    ya = restrOptStrat['Aa'] + restrOptStrat['Ba'] * np.cos(2 * np.pi * xa)
+    ax.plot(xa, ya, c="orange", label="Взрослые (по восст. функции)")
+
+    ax.legend()
+    plt.show()
+
+def show_gistogram(array, tittle):
     a_min = min(array)
     a_max = max(array)
     fig, histMp = plt.subplots()
@@ -45,7 +65,7 @@ def get_gistogram(array, tittle):
     histMp.set_title(tittle)
     plt.show()
 
-def get_correllation(array, arg_names):
+def draw_correllation(array, arg_names):
     array_cor=np.round(np.corrcoef(array),2)
     
     fig, cor = plt.subplots()
@@ -63,7 +83,7 @@ def get_correllation(array, arg_names):
     plt.draw()
 
 
-def get_regLine(x, y):
+def draw_regLine(x, y):
     slope, intercept, r, p, stderr = stats.linregress(x, y)
 
     fig, ax = plt.subplots()
@@ -89,7 +109,7 @@ def clean_regLine(fitData, xName, yName, a, b, shift):
             indexes.append(i)
     return fitData.drop(indexes)
 
-def get_limRegLine(x, y, xlim, ylim):
+def draw_limRegLine(x, y, xlim, ylim):
     slope, intercept, r, p, stderr = stats.linregress(x, y)
 
     fig, ax = plt.subplots()
@@ -108,8 +128,8 @@ def fixCorr(fitData, xName, yName, shift):
     исправление корреляции между xName и yName 
         удалением стратегий с отступами от линии регрессии на shift
     """
-    a, b, xlim, ylim = get_regLine(fitData[xName], fitData[yName])
+    a, b, xlim, ylim = draw_regLine(fitData[xName], fitData[yName])
     fitData = clean_regLine(fitData, xName, yName, a, b, shift)
-    get_limRegLine(fitData[xName], fitData[yName], xlim, ylim)
+    draw_limRegLine(fitData[xName], fitData[yName], xlim, ylim)
 
     return fitData

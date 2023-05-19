@@ -32,7 +32,7 @@ def drawSVM(selection, norm_machCoefs, norm_calcCoefs_mf, norm_calcCoefs_n, inte
     X = selection[:,1:]
     Y = selection[:,0]
     
-    ax = plt.gca()
+    fig, ax = plt.subplots()
     ax.set(ylim=(-1, 1))
     ax.set_xlabel('M'+str(i+1))
     ax.set_ylabel('M'+str(j+1))

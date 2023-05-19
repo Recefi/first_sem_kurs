@@ -144,6 +144,7 @@ def getCosinesCoef(coefData):
     "Косинусы между векторами вычисленных и вектором машинных коэффициентов"
     cosines = cosine_similarity(coefData)[1]
     print("\nвсе косинусы:\n", cosines, "\n")
+    print("\nнеобходимые косинусы:\n\n", cosines[2:], "\n")
 
     cosines = pd.Series(cosines[2:])
     cosines.index = coefData.index[2:]
