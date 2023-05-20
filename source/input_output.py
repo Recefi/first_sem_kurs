@@ -85,50 +85,62 @@ def parseNormSelData(selData):
     return selection, maxMparams
 
 
-def collectStratFitData(stratData, checkCoefData):
+def collectStratFitData(stratData, fitData):
+    fitsSeries = fitData['fit']
+    stratFitData = pd.concat([stratData, fitsSeries], axis=1)
+    return stratFitData
+
+def collectStratBothFitData(stratData, checkCoefData):
     trueFits = checkCoefData['trueFit']
     restoredFits = checkCoefData['restoredFit']
     stratFitData = pd.concat([stratData, trueFits, restoredFits], axis=1)
     return stratFitData
 
-def collectFitDataByAbsVals(checkCoefData):
-    indexes = checkCoefData.index
-    def groupByAbsVals(fits):
-        i = 0
-        k = 0
-        fitsByAbsVals = []
-        while(i < len(fits)):
-            absValFit = []
-            for j in range(0, 4):
-                if(k % 4 == indexes[i] % 4):
-                    absValFit.append(fits[i])
-                    i+=1
-                    k+=1
+def groupByAbsVals(fits):
+    indexes = fits.index
+    fits = fits.tolist()
+    i = 0
+    k = 0
+    fitsByAbsVals = []
+    while(i < len(fits)):
+        absValFit = []
+        for j in range(0, 4):
+            if(k % 4 == indexes[i] % 4):
+                absValFit.append(fits[i])
+                i+=1
+                k+=1
+            else:
+                absValFit.append(0)
+                k+=1
+
+        best = ""
+        if ((absValFit[0] != 0 and absValFit[1] != 0 and absValFit[2] != 0 and absValFit[3] != 0)):
+            if ((absValFit[0] < absValFit[3] and absValFit[1] < absValFit[3] and absValFit[2] < absValFit[3])):
+                best = "(-,-)"
+            else: 
+                if ((absValFit[0] < absValFit[2] and absValFit[1] < absValFit[2] and absValFit[3] < absValFit[2])):
+                    best = "(+,-)"
                 else:
-                    absValFit.append(0)
-                    k+=1
-
-            best = ""
-            if ((absValFit[0] != 0 and absValFit[1] != 0 and absValFit[2] != 0 and absValFit[3] != 0)):
-                if ((absValFit[0] < absValFit[3] and absValFit[1] < absValFit[3] and absValFit[2] < absValFit[3])):
-                    best = "(-,-)"
-                else: 
-                    if ((absValFit[0] < absValFit[2] and absValFit[1] < absValFit[2] and absValFit[3] < absValFit[2])):
-                        best = "(+,-)"
+                    if ((absValFit[0] < absValFit[1] and absValFit[2] < absValFit[1] and absValFit[3] < absValFit[1])):
+                        best = "(-,+)"
                     else:
-                        if ((absValFit[0] < absValFit[1] and absValFit[2] < absValFit[1] and absValFit[3] < absValFit[1])):
-                            best = "(-,+)"
-                        else:
-                            if ((absValFit[1] < absValFit[0] and absValFit[2] < absValFit[0] and absValFit[3] < absValFit[0])):
-                                best = "(+,+)"
+                        if ((absValFit[1] < absValFit[0] and absValFit[2] < absValFit[0] and absValFit[3] < absValFit[0])):
+                            best = "(+,+)"
 
-            absValFit.append(best)
-            fitsByAbsVals.append(absValFit)
+        absValFit.append(best)
+        fitsByAbsVals.append(absValFit)
 
-        return fitsByAbsVals
+    return fitsByAbsVals
 
-    trueFits = checkCoefData['trueFit'].tolist()
-    restoredFits = checkCoefData['restoredFit'].tolist()
+def collectFitDataByAbsVals(fitData):
+    fits = fitData['fit']
+    fitsByAbsVals = groupByAbsVals(fits)
+    fitDataByAbsVals = pd.DataFrame(fitsByAbsVals, columns=["fit(+,+)", "fit(-,+)", "fit(+,-)", "fit(-,-)", "the best"])
+    return fitDataByAbsVals
+
+def collectBothFitDataByAbsVals(checkCoefData):
+    trueFits = checkCoefData['trueFit']
+    restoredFits = checkCoefData['restoredFit']
 
     trueFitsByAbsVals = groupByAbsVals(trueFits)
     restrFitsByAbsVals = groupByAbsVals(restoredFits)

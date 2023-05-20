@@ -14,7 +14,7 @@ def runSVM(selection):
 
     X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.20)
     # Основная часть
-    clf = svm.SVC(kernel="linear", C=1000)
+    clf = svm.SVC(kernel="linear", C=1000)  # C=1000 обязательно!!! иначе коэф-ты восстанавливаются неверно
     clf.fit(X_train, Y_train)
 
     # Предсказание класса для X_test
@@ -22,7 +22,7 @@ def runSVM(selection):
     print('Точность классификатора:')
     print('     SVM: ', accuracy_score(Y_test, predictions)*100)
 
-    lambdas = clf.coef_[0]#.tolist()
+    lambdas = clf.coef_[0]
     intercept = clf.intercept_[0]
 
     return lambdas, intercept
@@ -39,9 +39,9 @@ def drawSVM(selection, norm_machCoefs, norm_calcCoefs_mf, norm_calcCoefs_n, inte
     ax.scatter(X[:, i], X[:, j], c=Y, s=5, cmap=plt.cm.Paired)
 
     x_visual = np.linspace(-1,1)
-    y_visual = -(norm_calcCoefs_mf[i] / norm_calcCoefs_mf[j]) * x_visual # - intercept / norm_calcCoefs[j]  # хз как подсчитать intercept для вычисляемых коэф-тов... мб использовать пропущенные слагаемые из полной формулы фитнеса...
+    y_visual = -(norm_calcCoefs_mf[i] / norm_calcCoefs_mf[j]) * x_visual # - intercept / norm_calcCoefs[j]  # хз как подсчитать intercept для вычисляемых коэф-тов... но это и не важно 
     ax.plot(x_visual, y_visual, color="red", label="Taylor_maxFitPnt")
-    y_visual = -(norm_calcCoefs_n[i] / norm_calcCoefs_n[j]) * x_visual # - intercept / norm_calcCoefs[j]
+    y_visual = -(norm_calcCoefs_n[i] / norm_calcCoefs_n[j]) * x_visual # - intercept / norm_calcCoefs[j]  # мб использовать пропущенные слагаемые из полной формулы фитнеса...
     ax.plot(x_visual, y_visual, color="green", label="Taylor_nearPnt")
     y_visual = -(norm_machCoefs[i] / norm_machCoefs[j]) * x_visual - intercept / norm_machCoefs[j]
     ax.plot(x_visual, y_visual, color="blue", label="SVM")

@@ -4,7 +4,7 @@ from scipy import stats
 import source.input_output as inOut
 
 
-def draw_sinss(Aj, Bj, Aa, Ba):
+def show_sinss(Aj, Bj, Aa, Ba):
     fig, ax = plt.subplots()
 
     xj = np.linspace(0, 1)
@@ -16,10 +16,9 @@ def draw_sinss(Aj, Bj, Aa, Ba):
     ax.plot(xa, ya, c="red", label="Взрослые особи")
 
     ax.legend()
-    #plt.ylim([-140, 0])
-    plt.draw()
+    plt.show()
 
-def draw_all_sinss(stratData):
+def show_all_sinss(stratData):
     fig, ax = plt.subplots()
     Aj, Bj, Aa, Ba = inOut.parseStratData(stratData)
 
@@ -32,8 +31,7 @@ def draw_all_sinss(stratData):
         ya = Aa[i] + Ba[i] * np.cos(2 * np.pi * xa)
         ax.plot(xa, ya, c="red")
 
-    #plt.ylim([-140, 0])
-    plt.draw()
+    plt.show()
 
 def show_comparison_sinss(stratData, maxTrueFitId, maxRestrFitId):
     fig, ax = plt.subplots()

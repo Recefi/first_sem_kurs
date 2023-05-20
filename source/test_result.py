@@ -70,7 +70,7 @@ def getCoefData_1(pqrsData, norm_machCoefs, machCoefs):
 def getCoefData_2(pqrsData, norm_machCoefs, machCoefs):
     """
     Считаем коэф-ты для всех точек (p,q,r,s) с учетом минуса при q,s
-        и улучшенной сокращенной формулой
+        и по улучшенной сокращенной формуле
     """
     lamCol = []
     for i in range(1,9):

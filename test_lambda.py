@@ -15,26 +15,33 @@ inOut.writeData(stratData, "strat_data_2")
 
 
 Fitness, FitIndxs, pqrsData, maxFitId = gs.calcFitness(stratData)
-trueFits = np.transpose(Fitness)[0]
+fitData = inOut.collectFitData(Fitness, FitIndxs)
 
 coefData = inOut.readData("coef_data")
 coefs = coefData.loc[-1].tolist()
 restoredFits = []
-for i in range(len(FitIndxs)):
-    Mparam = Fitness[i][1:45]
+for i in fitData.index:
+    Mparam = fitData.loc[i, 'M1':'M8M8']
     fit = 0
     for j in range(44):
         fit += coefs[j]*Mparam[j]
     restoredFits.append(fit)
 
-print(len(trueFits))
-
+trueFits = fitData['fit']
 checkCoefData = pd.DataFrame({'trueFit': trueFits, 'restoredFit': restoredFits}, index=FitIndxs)
-stratFitData = inOut.collectStratFitData(stratData, checkCoefData)
-inOut.writeData(stratFitData, "strat_fit_data_2")
 
 maxTrueFitId = checkCoefData[['trueFit']].idxmax(axis='index')[0]
 maxRestrFitId = checkCoefData[['restoredFit']].idxmax(axis='index')[0]
 
 gui.show_comparison_sinss(stratData, maxTrueFitId, maxRestrFitId)
 
+
+stratFitData = inOut.collectStratFitData(stratData, fitData)
+inOut.writeData(stratFitData, "strat_fit_data")
+fitDataByAbsVals = inOut.collectFitDataByAbsVals(fitData)
+inOut.writeData(fitDataByAbsVals, "fit_data_byAbsVals")
+
+stratBothFitData = inOut.collectStratBothFitData(stratData, checkCoefData)
+inOut.writeData(stratBothFitData, "strat_both_fit_data")
+fitDataByAbsVals = inOut.collectBothFitDataByAbsVals(checkCoefData)
+inOut.writeData(fitDataByAbsVals, "both_fit_data_byAbsVals")

@@ -74,11 +74,6 @@ def calcFitness(stratData):
         q = -param.gamma_j*M2
         s = -param.gamma_a*M6
 
-        # print("p = ", p)
-        # print("r = ", r)
-        # print("q = ", q)
-        # print("s = ", s)
-
         if(4*r*p+np.square(p+q-s)>=0):
             fit = -s-p-q+(np.sqrt((4*r*p+(p+q-s)**2)))
             print('fit',fit)
