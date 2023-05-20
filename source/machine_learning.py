@@ -41,7 +41,7 @@ def drawSVM(selection, norm_machCoefs, norm_calcCoefs_mf, norm_calcCoefs_n, inte
     x_visual = np.linspace(-1,1)
     y_visual = -(norm_calcCoefs_mf[i] / norm_calcCoefs_mf[j]) * x_visual # - intercept / norm_calcCoefs[j]  # хз как подсчитать intercept для вычисляемых коэф-тов... но это и не важно 
     ax.plot(x_visual, y_visual, color="red", label="Taylor_maxFitPnt")
-    y_visual = -(norm_calcCoefs_n[i] / norm_calcCoefs_n[j]) * x_visual # - intercept / norm_calcCoefs[j]  # мб использовать пропущенные слагаемые из полной формулы фитнеса...
+    y_visual = -(norm_calcCoefs_n[i] / norm_calcCoefs_n[j]) * x_visual # - intercept / norm_calcCoefs[j]  # мб использовать пропущенные слагаемые из полной формулы Тейлора...
     ax.plot(x_visual, y_visual, color="green", label="Taylor_nearPnt")
     y_visual = -(norm_machCoefs[i] / norm_machCoefs[j]) * x_visual - intercept / norm_machCoefs[j]
     ax.plot(x_visual, y_visual, color="blue", label="SVM")
