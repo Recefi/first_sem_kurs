@@ -131,7 +131,7 @@ def calcSelection(Fitness):
             selection.append(res)
     return selection
 
-def normMparams(array):
+def normSelection(array):
     """Нормирование по макс. значению в столбце начиная со 2-го столбца"""
     array = np.array(array)
     maxCols = []

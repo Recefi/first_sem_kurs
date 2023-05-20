@@ -61,27 +61,28 @@ plt.show()
 
 
 # Либо
-Fitness, maxMparams = gs.normMparams(Fitness)
-normFitData = inOut.collectNormFitData(Fitness, FitIndxs, maxMparams)
-inOut.writeData(normFitData, "norm_fit_data")
+selection = gs.calcSelection(Fitness)
+selData = inOut.collectSelData(selection)
+inOut.writeData(selData, "sel_data")
 # # Либо
-# normFitData = inOut.readData("norm_fit_data")
-# Fitness, FitIndxs, maxFitId, maxMparams = inOut.parseNormFitData(normFitData)
+# selData = inOut.readData("sel_data")
+# selection = inOut.parseSelData(selData)
 
 # Либо
-selection = gs.calcSelection(Fitness)
-inOut.writeSelection(selection, "sel_data")
+selection, maxMparams = gs.normSelection(selection)
+normSelData = inOut.collectNormSelData(selection, maxMparams)
+inOut.writeData(normSelData, "norm_sel_data")
 # # Либо
-# selection = inOut.readSelection("sel_data")
+# normSelData = inOut.readData("norm_sel_data")
+# selection, maxMparams = inOut.parseNormSelData(normSelData)
 
 
-# # гистограммы разностей нормированных макропараметров
+# # гистограммы нормированных разностей макропараметров
 # for i in range(1,9):
 #     gui.show_gistogram(np.transpose(selection)[i],"M"+str(i))
 
 
 print("запускаем машинное обучение")
-selection = np.array(selection)
 norm_machCoefs, intercept = ml.runSVM(selection)
 # машинное обучение возвращает "нормированные" лямбда для нормированных макропараметров
 # "разнормируем" машинные коэф-ты:
@@ -126,8 +127,6 @@ print(fitCosinesData)
 
 restr_maxFitId = checkCoefData[['restoredFit']].idxmax(axis='index')[0]
 print("\nrestore_maxFitId =", restr_maxFitId)
-# gui.draw_sinss(Aj[restr_maxFitId], Bj[restr_maxFitId], Aa[restr_maxFitId], Ba[restr_maxFitId])
-# plt.show()
 
 
 print("\n")

@@ -9,12 +9,13 @@ def draw_sinss(Aj, Bj, Aa, Ba):
 
     xj = np.linspace(0, 1)
     yj = Aj + Bj * np.cos(2 * np.pi * xj)
-    ax.plot(xj, yj, c="blue")
+    ax.plot(xj, yj, c="blue", label="Молодые особи")
 
     xa = np.linspace(0, 1)
     ya = Aa + Ba * np.cos(2 * np.pi * xa)
-    ax.plot(xa, ya, c="red")
+    ax.plot(xa, ya, c="red", label="Взрослые особи")
 
+    ax.legend()
     #plt.ylim([-140, 0])
     plt.draw()
 

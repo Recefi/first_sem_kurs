@@ -51,37 +51,7 @@ def collectFitData(Fitness, FitIndxs):
     return fitData
 
 
-def collectNormFitData(Fitness, FitIndxs, maxMparams):
-    """Собираем данные фитнеса и нормированных макропараметров"""
-    cols = ['fit']
-    for i in range(1, 9):
-        cols.append('M'+str(i))
-    for i in range(1, 9):
-        for j in range(i, 9):
-            cols.append('M'+str(i) + 'M'+str(j))
-
-    fitData = pd.DataFrame(Fitness, columns=cols, index=FitIndxs)
-    fitData.loc[-1, 'M1':'M8M8'] = maxMparams
-    fitData = fitData.sort_index()
-    return fitData
-
-def parseNormFitData(fitData):
-    """
-    Возвращает: Fitness, FitIndxs, maxf_ind, maxMparams
-        FitIndxs[индекс Fitness] = исходный индекс
-            maxf_ind в исходных индексах, а не в индексах Fitness
-                maxMparams в виде массива numpy
-    """
-    Fitness = fitData.values[1:]
-    FitIndxs = fitData.index[1:]
-    # Получаем индекс макс.значения фитнеса с учетом редактирования файла
-    maxf_ind = fitData[['fit']].idxmax(axis='index')[0]
-    maxMparams = fitData.loc[-1, 'M1':'M8M8'].to_numpy()
-    return Fitness, FitIndxs, maxf_ind, maxMparams
-
-
-def writeSelection(selection, fileName):
-    """Запись итоговой выборки в файл"""
+def collectSelData(selection):
     cols = ['class']
     for i in range(1, 9):
         cols.append('M'+str(i))
@@ -90,13 +60,29 @@ def writeSelection(selection, fileName):
             cols.append('M'+str(i) + 'M'+str(j))
 
     selData = pd.DataFrame(selection, columns=cols)
-    selData.to_csv("csv/" + fileName + ".csv", index=True)
+    return selData
 
-def readSelection(fileName):
-    """Чтение итоговой выборки из файла"""
-    selData = pd.read_csv("csv/" + fileName + ".csv")
+def parseSelData(selData):
     selection = selData.values
     return selection
+
+def collectNormSelData(selection, maxMparams):
+    cols = ['class']
+    for i in range(1, 9):
+        cols.append('M'+str(i))
+    for i in range(1, 9):
+        for j in range(i, 9):
+            cols.append('M'+str(i) + 'M'+str(j))
+
+    selData = pd.DataFrame(selection, columns=cols)
+    selData.loc[-1, 'M1':'M8M8'] = maxMparams
+    selData = selData.sort_index()
+    return selData
+
+def parseNormSelData(selData):
+    selection = selData.values
+    maxMparams = selData.loc[-1, 'M1':'M8M8'].to_numpy()
+    return selection, maxMparams
 
 
 def collectStratFitData(stratData, checkCoefData):
