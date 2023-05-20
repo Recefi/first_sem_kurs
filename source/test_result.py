@@ -33,7 +33,7 @@ def getDerivatives(p, q, r, s):
     return hp, hq, hr, hs, hpp, hpq, hpr, hps, hqq, hqr, hqs, hrr, hrs, hss
 
 def getCoefData_1(pqrsData, norm_machCoefs, machCoefs):
-    """Считаем коэф-ты для всех точек (p,q,r,s) с учетом минуса при q,s"""
+    """Считаем коэф-ты для всех точек (p,q,r,s) с учетом минуса в формулах q,s"""
     lamCol = []
     for i in range(1,9):
         lamCol.append('lam'+str(i))
@@ -69,7 +69,7 @@ def getCoefData_1(pqrsData, norm_machCoefs, machCoefs):
 
 def getCoefData_2(pqrsData, norm_machCoefs, machCoefs):
     """
-    Считаем коэф-ты для всех точек (p,q,r,s) с учетом минуса при q,s
+    Считаем коэф-ты для всех точек (p,q,r,s) с учетом минуса в формулах q,s
         и по улучшенной сокращенной формуле
     """
     lamCol = []
@@ -106,7 +106,7 @@ def getCoefData_2(pqrsData, norm_machCoefs, machCoefs):
     return coefData
 
 def getCoefData_3(pqrsData, norm_machCoefs, machCoefs):
-    """Считаем коэф-ты для всех точек (p,q,r,s) без учета минуса при q,s"""
+    """Считаем коэф-ты для всех точек (p,q,r,s) без учета минуса в формулах q,s"""
     lamCol = []
     for i in range(1,9):
         lamCol.append('lam'+str(i))
@@ -151,10 +151,7 @@ def getCosinesCoef(coefData):
     return cosines
 
 def checkCoef(coefData, fitData, pqrsData, maxFitPntId, nearPntId):
-    """
-    Проверка правильно ли считаются производные
-        или же насколько грубо полноценное разложение по Тейлору до 2 порядка аппроксимирует функцию фитнеса
-    """
+    """Сравнение способов восстановления функции фитнеса"""
     def fullTaylor(pntId):
         p0, q0, r0, s0 = pqrsData.loc[pntId]
         hp, hq, hr, hs, hpp, hpq, hpr, hps, hqq, hqr, hqs, hrr, hrs, hss = getDerivatives(p0, q0, r0, s0)
