@@ -1,5 +1,4 @@
 import pandas as pd
-import numpy as np
 
 def readData(fileName):
     data = pd.read_csv("csv/" + fileName + ".csv", index_col=0)

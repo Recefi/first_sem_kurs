@@ -1,5 +1,4 @@
 import numpy as np
-import matplotlib.pyplot as plt
 import pandas as pd
 import source.gen_selection as gs
 import source.graphical_interface as gui
