@@ -21,7 +21,7 @@ def parseStratData(stratData):
     return A_j, B_j, A_a, B_a
 
 def collectStratData(A_j, B_j, A_a, B_a):
-    """Собираем данные стратегий"""
+    """Собирает данные стратегий"""
     stratData = pd.DataFrame({'Aj': A_j, 'Bj': B_j, 'Aa': A_a, 'Ba': B_a})
     return stratData
 
@@ -39,7 +39,7 @@ def parseFitData(fitData):
     return Fitness, FitIndxs, maxf_ind
 
 def collectFitData(Fitness, FitIndxs):
-    """Собираем данные фитнеса и макропараметров"""
+    """Собирает данные фитнеса и макропараметров"""
     cols = ['fit']
     for i in range(1, 9):
         cols.append('M'+str(i))
@@ -52,6 +52,7 @@ def collectFitData(Fitness, FitIndxs):
 
 
 def collectSelData(selection):
+    """Собирает данные итоговой выборки"""
     cols = ['class']
     for i in range(1, 9):
         cols.append('M'+str(i))
@@ -67,6 +68,7 @@ def parseSelData(selData):
     return selection
 
 def collectNormSelData(selection, maxMparams):
+    """Собирает данные нормированной итоговой выборки"""
     cols = ['class']
     for i in range(1, 9):
         cols.append('M'+str(i))
@@ -80,17 +82,23 @@ def collectNormSelData(selection, maxMparams):
     return selData
 
 def parseNormSelData(selData):
+    """
+    Возвращает selection, maxMparams
+        maxMparams в виде массива numpy
+    """
     selection = selData.values
     maxMparams = selData.loc[-1, 'M1':'M8M8'].to_numpy()
     return selection, maxMparams
 
 
-def collectStratFitData(stratData, fitData):
+def getStratFitData(stratData, fitData):
+    """Объединяет данные стратегий и подсчитанного фитнеса"""
     fitsSeries = fitData['fit']
     stratFitData = pd.concat([stratData, fitsSeries], axis=1)
     return stratFitData
 
-def collectStratBothFitData(stratData, checkCoefData):
+def getStratBothFitData(stratData, checkCoefData):
+    """Объединяет данные стратегий, подсчитанного и восстановленного фитнеса"""
     trueFits = checkCoefData['trueFit']
     restoredFits = checkCoefData['restoredFit']
     stratFitData = pd.concat([stratData, trueFits, restoredFits], axis=1)
@@ -132,13 +140,15 @@ def groupByAbsVals(fits):
 
     return fitsByAbsVals
 
-def collectFitDataByAbsVals(fitData):
+def getFitDataByAbsVals(fitData):
+    """Сравнение значений подсчитанного фитнеса при одинаковых по модулю и разных по знаку амплитудах"""
     fits = fitData['fit']
     fitsByAbsVals = groupByAbsVals(fits)
     fitDataByAbsVals = pd.DataFrame(fitsByAbsVals, columns=["fit(+,+)", "fit(-,+)", "fit(+,-)", "fit(-,-)", "the best"])
     return fitDataByAbsVals
 
-def collectBothFitDataByAbsVals(checkCoefData):
+def getBothFitDataByAbsVals(checkCoefData):
+    """Сравнение значений подсчитанного и восстановленного фитнеса при одинаковых по модулю и разных по знаку амплитудах"""
     trueFits = checkCoefData['trueFit']
     restoredFits = checkCoefData['restoredFit']
 

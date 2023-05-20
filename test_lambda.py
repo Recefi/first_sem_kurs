@@ -36,12 +36,12 @@ maxRestrFitId = checkCoefData[['restoredFit']].idxmax(axis='index')[0]
 gui.show_comparison_sinss(stratData, maxTrueFitId, maxRestrFitId)
 
 
-stratFitData = inOut.collectStratFitData(stratData, fitData)
+stratFitData = inOut.getStratFitData(stratData, fitData)
 inOut.writeData(stratFitData, "strat_fit_data")
-fitDataByAbsVals = inOut.collectFitDataByAbsVals(fitData)
+fitDataByAbsVals = inOut.getFitDataByAbsVals(fitData)
 inOut.writeData(fitDataByAbsVals, "fit_data_byAbsVals")
 
-stratBothFitData = inOut.collectStratBothFitData(stratData, checkCoefData)
+stratBothFitData = inOut.getStratBothFitData(stratData, checkCoefData)
 inOut.writeData(stratBothFitData, "strat_both_fit_data")
-fitDataByAbsVals = inOut.collectBothFitDataByAbsVals(checkCoefData)
+fitDataByAbsVals = inOut.getBothFitDataByAbsVals(checkCoefData)
 inOut.writeData(fitDataByAbsVals, "both_fit_data_byAbsVals")
