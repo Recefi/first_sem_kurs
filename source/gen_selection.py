@@ -3,7 +3,11 @@ import numpy as np
 import pandas as pd
 
 def genStrats(n):
-    """Генерация стратегий"""
+    """
+    Генерирует n наборов стратегий (Aj,Bj,Aa,Ba) 
+        в каждом по 4 стратегии отличающихся лишь знаком при (Bj,Ba)
+            стратегии в наборе идут в порядке: (+,+), (-,+), (+,-), (-,-)
+    """
     A_jun = []
     B_jun = []
     A_adult = []
@@ -41,7 +45,7 @@ def genStrats(n):
 def calcFitness(stratData):
     """
     Подсчет фитнеса и макропараметров
-        Возвращает: Fitness, FitIndxs, maxf_ind
+        Возвращает: Fitness, FitIndxs, pqrsData, maxf_ind
             FitIndxs[индекс Fitness] = исходный индекс
                 pqrsData и maxf_ind в исходных индексах стратегий, а не в индексах массива Fitness
     """
