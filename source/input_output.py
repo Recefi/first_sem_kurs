@@ -29,7 +29,7 @@ def parseFitData(fitData):
     """
     Возвращает: Fitness, FitIndxs, maxf_ind
         FitIndxs[индекс Fitness] = исходный индекс
-            maxf_ind в исходных индексах, а не в индексах Fitness
+            maxf_ind в исходных индексах стратегий, а не в индексах массива Fitness
     """
     Fitness = fitData.values
     FitIndxs = fitData.index

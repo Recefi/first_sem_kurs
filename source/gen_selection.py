@@ -43,7 +43,7 @@ def calcFitness(stratData):
     Подсчет фитнеса и макропараметров
         Возвращает: Fitness, FitIndxs, maxf_ind
             FitIndxs[индекс Fitness] = исходный индекс
-                pqrsData и maxf_ind в исходных индексах, а не в индексах Fitness
+                pqrsData и maxf_ind в исходных индексах стратегий, а не в индексах массива Fitness
     """
     A_jun = stratData['Aj']
     B_jun = stratData['Bj']
@@ -56,7 +56,7 @@ def calcFitness(stratData):
     Fitness = []
     FitIndxs = []
     pqrs = []
-    for i in A_jun.index:  # используем исходные индексы
+    for i in A_jun.index:  # используем исходные индексы стратегий
         res = []
 
         M1 = param.sigma1 * (A_jun[i] + param.depth)

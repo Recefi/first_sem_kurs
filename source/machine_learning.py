@@ -6,9 +6,7 @@ from sklearn.model_selection import train_test_split
 
 def runSVM(selection):
     X = selection[:,1:]
-    #print(X)
     Y = selection[:,0]
-    #print(Y)
 
     print(len(X))
 
@@ -39,7 +37,7 @@ def drawSVM(selection, norm_machCoefs, norm_calcCoefs_mf, norm_calcCoefs_n, inte
     ax.scatter(X[:, i], X[:, j], c=Y, s=5, cmap=plt.cm.Paired)
 
     x_visual = np.linspace(-1,1)
-    y_visual = -(norm_calcCoefs_mf[i] / norm_calcCoefs_mf[j]) * x_visual # - intercept / norm_calcCoefs[j]  # хз как подсчитать intercept для вычисляемых коэф-тов... но это и не важно 
+    y_visual = -(norm_calcCoefs_mf[i] / norm_calcCoefs_mf[j]) * x_visual # - intercept / norm_calcCoefs[j]  # не уверен как подсчитать intercept для вычисляемых коэф-тов... но это и не важно 
     ax.plot(x_visual, y_visual, color="red", label="Taylor_maxFitPnt")
     y_visual = -(norm_calcCoefs_n[i] / norm_calcCoefs_n[j]) * x_visual # - intercept / norm_calcCoefs[j]  # мб использовать пропущенные слагаемые из полной формулы Тейлора...
     ax.plot(x_visual, y_visual, color="green", label="Taylor_nearPnt")
